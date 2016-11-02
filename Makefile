@@ -4,7 +4,9 @@ NCORES = $(shell grep -c ^processor /proc/cpuinfo)
 VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/2015.4/settings64.sh
 VSUBDIRS = hdl buildroot linux
 
-all: build-dir build/pluto.dfu build/pluto.frm
+VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
+
+all: build-dir build/pluto.dfu build/pluto.frm build/boot.dfu
 
 build-dir:
 	mkdir -p build
@@ -47,8 +49,8 @@ build/%.dtb: linux/arch/arm/boot/dts/%.dtb
 ### Buildroot ###
 
 buildroot/output/images/rootfs.cpio.gz:
-	@echo plutosdr-fw $(shell git describe --abbrev=4 --dirty --always --tags) > $(CURDIR)/buildroot/board/pluto/VERSIONS
-	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(shell cd $(dir);git describe --abbrev=4 --dirty --always --tags) >> $(CURDIR)/buildroot/board/pluto/VERSIONS;)
+	@echo plutosdr-fw $(VERSION)> $(CURDIR)/buildroot/board/pluto/VERSIONS
+	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(VERSION) >> $(CURDIR)/buildroot/board/pluto/VERSIONS;)
 	make -C buildroot ARCH=arm zynq_pluto_defconfig
 	make -C buildroot ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi- BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/pluto/busybox-1.25.0.config all
 
@@ -84,8 +86,6 @@ build/pluto.frm: build/pluto.itb
 
 ### DFU update firmware file ###
 
-
-build/pluto.dfu: build/pluto.itb
 build/boot.dfu: build/boot.bin
 	cp $< $<.tmp
 	dfu-suffix -a $<.tmp -v 0x0456 -p 0xb673
@@ -95,6 +95,10 @@ build/pluto.dfu: build/pluto.itb
 	cp $< $<.tmp
 	dfu-suffix -a $<.tmp -v 0x0456 -p 0xb673
 	mv $<.tmp $@
+
+clean-build:
+	rm -f $(notdir $(wildcard build/*))
+	rm -rf build/*
 
 clean:
 	make -C u-boot-xlnx clean
@@ -107,6 +111,8 @@ git-update-all:
 	git submodule update --recursive --remote
 	git submodule foreach git pull --ff-only
 
+zip-all:  build/pluto.dfu build/pluto.frm build/boot.dfu
+	zip -j build/plutosdr-fw-$(VERSION).zip $^
 
 dfu-pluto: build/pluto.dfu
 	dfu-util -D build/pluto.dfu -a 1
