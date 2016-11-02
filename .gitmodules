@@ -1,0 +1,16 @@
+[submodule "u-boot-xlnx"]
+	path = u-boot-xlnx
+	url = https://github.com/analogdevicesinc/u-boot-xlnx.git
+	branch = pluto
+[submodule "buildroot"]
+	path = buildroot
+	url = https://github.com/analogdevicesinc/buildroot.git
+	branch = pluto
+[submodule "linux"]
+	path = linux
+	url = https://github.com/analogdevicesinc/linux
+	branch = xcomm_zynq
+[submodule "hdl"]
+	path = hdl
+	url = https://github.com/analogdevicesinc/hdl
+	branch = dev
