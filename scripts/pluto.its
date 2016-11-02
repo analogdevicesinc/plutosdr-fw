@@ -12,7 +12,6 @@
 / {
 	description = "Configuration to load fpga before Kernel";
 	magic = "ITB PlutoSDR (ADALM-PLUTO)";
-	fit-image-size = <0x1E00000>;
 	#address-cells = <1>;
 	images {
 
@@ -38,7 +37,7 @@
 
 		linux_kernel@1 {
 			description = "Linux";
-			data = /incbin/("../build//zImage");
+			data = /incbin/("../build/zImage");
 			type = "kernel";
 			arch = "arm";
 			os = "linux";

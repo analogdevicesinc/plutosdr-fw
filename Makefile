@@ -4,14 +4,13 @@ NCORES = $(shell grep -c ^processor /proc/cpuinfo)
 VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/2015.4/settings64.sh
 VSUBDIRS = hdl buildroot linux
 
-all: output build/pluto.dfu build/pluto.frm
+all: build-dir build/pluto.dfu build/pluto.frm
 
+build-dir:
+	mkdir -p build
 
 %: build/%
 	cp $< $@
-
-output:
-	mkdir -p $@
 
 ### u-boot ###
 
@@ -92,6 +91,11 @@ build/boot.dfu: build/boot.bin
 	dfu-suffix -a $<.tmp -v 0x0456 -p 0xb673
 	mv $<.tmp $@
 
+build/pluto.dfu: build/pluto.itb
+	cp $< $<.tmp
+	dfu-suffix -a $<.tmp -v 0x0456 -p 0xb673
+	mv $<.tmp $@
+
 clean:
 	make -C u-boot-xlnx clean
 	make -C linux clean
@@ -99,10 +103,15 @@ clean:
 	rm -f $(notdir $(wildcard build/*))
 	rm -rf build/*
 
-test:
-	@echo plutosdr-fw $(shell git describe --abbrev=4 --dirty --always --tags) > $(CURDIR)/buildroot/board/pluto/VERSIONS
-	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(shell cd $(dir);git describe --abbrev=4 --dirty --always --tags) >> $(CURDIR)/buildroot/board/pluto/VERSIONS;)
-
 git-update-all:
 	git submodule update --recursive --remote
 	git submodule foreach git pull --ff-only
+
+
+dfu-pluto: build/pluto.dfu
+	dfu-util -D build/pluto.dfu -a 1
+	sudo dfu-util -e
+
+dfu-uboot: build/boot.dfu
+	read -p "Erasing u-boot be careful - Press any key to continue... " -n1 -s && dfu-util -D boot.dfu -a 0
+	sudo dfu-util -e
