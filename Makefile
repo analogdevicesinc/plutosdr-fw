@@ -50,7 +50,7 @@ build/%.dtb: linux/arch/arm/boot/dts/%.dtb
 
 buildroot/output/images/rootfs.cpio.gz:
 	@echo plutosdr-fw $(VERSION)> $(CURDIR)/buildroot/board/pluto/VERSIONS
-	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(VERSION) >> $(CURDIR)/buildroot/board/pluto/VERSIONS;)
+	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(shell cd $(dir) && git describe --abbrev=4 --dirty --always --tags) >> $(CURDIR)/buildroot/board/pluto/VERSIONS;)
 	make -C buildroot ARCH=arm zynq_pluto_defconfig
 	make -C buildroot ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi- BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/pluto/busybox-1.25.0.config all
 
