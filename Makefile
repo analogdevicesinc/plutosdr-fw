@@ -5,6 +5,7 @@ VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/2015.4/settings64.sh
 VSUBDIRS = hdl buildroot linux
 
 VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
+UBOOT_VERSION=$(shell echo -n "PlutoSDR " && cd u-boot-xlnx && git describe --abbrev=0 --dirty --always --tags)
 
 all: build-dir build/pluto.dfu build/pluto.frm build/boot.dfu
 
@@ -16,10 +17,9 @@ build-dir:
 
 ### u-boot ###
 
-u-boot-xlnx/u-boot:
-u-boot-xlnx/tools/mkimage:
+u-boot-xlnx/u-boot u-boot-xlnx/tools/mkimage:
 	make -C u-boot-xlnx ARCH=arm zynq_pluto_defconfig
-	make -C u-boot-xlnx ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi-
+	make -C u-boot-xlnx ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi- UBOOTVERSION="$(UBOOT_VERSION)"
 
 .PHONY: u-boot-xlnx/u-boot
 
