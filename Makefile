@@ -9,7 +9,7 @@ VSUBDIRS = hdl buildroot linux
 VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
 UBOOT_VERSION=$(shell echo -n "PlutoSDR " && cd u-boot-xlnx && git describe --abbrev=0 --dirty --always --tags)
 
-all: build/pluto.dfu build/pluto.frm build/boot.dfu
+all: build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu
 
 build:
 	mkdir -p $@
@@ -27,6 +27,12 @@ u-boot-xlnx/u-boot u-boot-xlnx/tools/mkimage:
 
 build/u-boot.elf: u-boot-xlnx/u-boot | build
 	cp $< $@
+
+build/uboot-env.txt: u-boot-xlnx/u-boot | build
+	CROSS_COMPILE=$(CROSS_COMPILE) scripts/get_default_envs.sh > $@
+
+build/uboot-env.bin: build/uboot-env.txt
+	u-boot-xlnx/tools/mkenvimage -s 0x20000 -o $@ $<
 
 ### Linux ###
 
@@ -88,7 +94,7 @@ build/pluto.frm: build/pluto.itb
 
 ### DFU update firmware file ###
 
-build/boot.dfu: build/boot.bin
+build/%.dfu: build/%.bin
 	cp $< $<.tmp
 	dfu-suffix -a $<.tmp -v 0x0456 -p 0xb673
 	mv $<.tmp $@
@@ -113,13 +119,13 @@ git-update-all:
 	git submodule update --recursive --remote
 	git submodule foreach git pull --ff-only
 
-zip-all:  build/pluto.dfu build/pluto.frm build/boot.dfu
+zip-all:  build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu
 	zip -j build/plutosdr-fw-$(VERSION).zip $^
 
 dfu-pluto: build/pluto.dfu
 	dfu-util -D build/pluto.dfu -a 1
 	dfu-util -e
 
-dfu-uboot: build/boot.dfu
-	echo "Erasing u-boot be careful - Press Return to continue... " && read key  && dfu-util -D build/boot.dfu -a 0
+dfu-uboot: build/boot.dfu build/uboot-env.dfu
+	echo "Erasing u-boot be careful - Press Return to continue... " && read key  && dfu-util -D build/boot.dfu -a 0 && dfu-util -D build/uboot-env.dfu -a 2
 	dfu-util -e
