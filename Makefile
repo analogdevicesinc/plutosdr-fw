@@ -126,6 +126,10 @@ dfu-pluto: build/pluto.dfu
 	dfu-util -D build/pluto.dfu -a 1
 	dfu-util -e
 
-dfu-uboot: build/boot.dfu build/uboot-env.dfu
+dfu-sf-uboot: build/boot.dfu build/uboot-env.dfu
 	echo "Erasing u-boot be careful - Press Return to continue... " && read key  && dfu-util -D build/boot.dfu -a 0 && dfu-util -D build/uboot-env.dfu -a 2
+	dfu-util -e
+
+dfu-all: build/pluto.dfu build/boot.dfu build/uboot-env.dfu
+	echo "Erasing u-boot be careful - Press Return to continue... " && read key && dfu-util -D build/pluto.dfu -a 1 && dfu-util -D build/boot.dfu -a 0 && dfu-util -D build/uboot-env.dfu -a 2
 	dfu-util -e
