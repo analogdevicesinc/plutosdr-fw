@@ -37,3 +37,10 @@ PlutoSDR Firmware
       -rwxrwxr-x 1 michael 2,7M Nov 10 17:17 zImage
       -rw-rw-r-- 1 michael  16K Nov 10 17:17 zynq-pluto-sdr.dtb   
  ```
+ 
+| File  | Comment |
+| ------------- | ------------- |
+| pluto.frm | Main PlutSDR firmware file used with the USB Mass Storage Device |
+| boot.dfu  | First and Second Stage Bootloader (u-boot + fsbl) used in DFU mode |
+| uboot-env.dfu  | u-boot default environemnt used in DFU mode |
+ 
