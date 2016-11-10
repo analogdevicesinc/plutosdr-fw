@@ -41,6 +41,7 @@ PlutoSDR Firmware
 | File  | Comment |
 | ------------- | ------------- |
 | pluto.frm | Main PlutSDR firmware file used with the USB Mass Storage Device |
+| pluto.dfu | Main PlutSDR firmware file used used in DFU mode |
 | boot.dfu  | First and Second Stage Bootloader (u-boot + fsbl) used in DFU mode |
 | uboot-env.dfu  | u-boot default environemnt used in DFU mode |
  
