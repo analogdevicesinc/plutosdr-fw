@@ -13,3 +13,27 @@ PlutoSDR Firmware
       make
  
  ```
+ 
+* Build Artifacts
+ ```bash
+      michael@HAL9000:~/devel/plutosdr-fw$ ls -AGhl build
+      total 30M
+      -rw-rw-r-- 1 michael   69 Nov 10 17:17 boot.bif
+      -rw-rw-r-- 1 michael 485K Nov 10 17:17 boot.bin
+      -rw-rw-r-- 1 michael 485K Nov 10 17:17 boot.dfu
+      -rw-rw-r-- 1 michael 6,4M Nov 10 17:17 pluto.dfu
+      -rw-rw-r-- 1 michael 6,4M Nov 10 17:17 pluto.frm
+      -rw-rw-r-- 1 michael   33 Nov 10 17:17 pluto.frm.md5
+      -rw-rw-r-- 1 michael 6,4M Nov 10 17:17 pluto.itb
+      -rw-r--r-- 1 michael 2,8M Nov 10 17:17 rootfs.cpio.gz
+      drwxrwxr-x 6 michael 4,0K Nov 10 17:17 sdk
+      -rw-rw-r-- 1 michael  81K Nov 10 17:17 system_bd.tcl
+      -rw-rw-r-- 1 michael 941K Nov 10 17:17 system_top.bit
+      -rw-rw-r-- 1 michael 399K Okt 27 18:46 system_top.hdf
+      -rwxrwxr-x 1 michael 2,5M Nov 10 17:17 u-boot.elf
+      -rw-rw---- 1 michael 128K Nov 10 17:17 uboot-env.bin
+      -rw-rw---- 1 michael 129K Nov 10 17:17 uboot-env.dfu
+      -rw-rw-r-- 1 michael 3,9K Nov 10 17:17 uboot-env.txt
+      -rwxrwxr-x 1 michael 2,7M Nov 10 17:17 zImage
+      -rw-rw-r-- 1 michael  16K Nov 10 17:17 zynq-pluto-sdr.dtb   
+ ```
