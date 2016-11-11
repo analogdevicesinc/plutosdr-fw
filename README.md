@@ -50,23 +50,23 @@ PlutoSDR Firmware
      | pluto.frm | Main PlutoSDR firmware file used with the USB Mass Storage Device |
      | pluto.dfu | Main PlutoSDR firmware file used in DFU mode |
      | boot.dfu  | First and Second Stage Bootloader (u-boot + fsbl) used in DFU mode |
-     | uboot-env.dfu  | u-boot default environemnt used in DFU mode |
+     | uboot-env.dfu  | u-boot default environment used in DFU mode |
  
   * Other intermediate targets
 
      | File  | Comment |
      | ------------- | ------------- |
      | boot.bif | Boot Image Format file used to generate the Boot Image |
-     | boot.bin | Finale Boot Image |
+     | boot.bin | Final Boot Image |
      | pluto.frm.md5 | md5sum of the pluto.frm file |
      | pluto.itb | u-boot Flattened Image Tree |
      | rootfs.cpio.gz | The Root Filesystem archive |
-     | sdk | Vivado/XSDK Build folder inlcuding the FSBL |
+     | sdk | Vivado/XSDK Build folder including  the FSBL |
      | system_top.bit | FPGA Bitstream (from HDF) |
-     | system_top.hdf | FPGA Hardware Desciption File exported by Vivado |
+     | system_top.hdf | FPGA Hardware Description  File exported by Vivado |
      | u-boot.elf | u-boot ELF Binary |
-     | uboot-env.bin | u-boot default Enrionment in binary format created form uboot-env.txt |
-     | uboot-env.txt | u-boot default Enrionment in human readbale text format |
+     | uboot-env.bin | u-boot default environment in binary format created form uboot-env.txt |
+     | uboot-env.txt | u-boot default environment in human readable text format |
      | zImage | Compressed Linux Kernel Image |
      | zynq-pluto-sdr.dtb | Device Tree Blob |
 
