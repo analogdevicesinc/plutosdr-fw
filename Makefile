@@ -115,10 +115,6 @@ clean:
 	rm -f $(notdir $(wildcard build/*))
 	rm -rf build/*
 
-git-update-all:
-	git submodule update --recursive --remote
-	git submodule foreach git pull --ff-only
-
 zip-all:  build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu
 	zip -j build/plutosdr-fw-$(VERSION).zip $^
 
@@ -133,3 +129,9 @@ dfu-sf-uboot: build/boot.dfu build/uboot-env.dfu
 dfu-all: build/pluto.dfu build/boot.dfu build/uboot-env.dfu
 	echo "Erasing u-boot be careful - Press Return to continue... " && read key && dfu-util -D build/pluto.dfu -a 1 && dfu-util -D build/boot.dfu -a 0 && dfu-util -D build/uboot-env.dfu -a 2
 	dfu-util -e
+
+git-update-all:
+	git submodule update --recursive --remote
+
+git-pull:
+	git pull --recurse-submodules
