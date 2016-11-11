@@ -14,6 +14,11 @@ PlutoSDR Firmware
  
  ```
  
+ * Updating your local repository 
+ ```bash 
+      git pull --recurse-submodules
+  ```
+ 
 * Build Artifacts
  ```bash
       michael@HAL9000:~/devel/plutosdr-fw$ ls -AGhl build
