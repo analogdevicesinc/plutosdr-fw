@@ -9,7 +9,7 @@ VSUBDIRS = hdl buildroot linux
 VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
 UBOOT_VERSION=$(shell echo -n "PlutoSDR " && cd u-boot-xlnx && git describe --abbrev=0 --dirty --always --tags)
 
-all: build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu
+all: build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu build/boot.frm
 
 build:
 	mkdir -p $@
@@ -92,6 +92,9 @@ build/pluto.frm: build/pluto.itb
 	md5sum $< | cut -d ' ' -f 1 > $@.md5
 	cat $< $@.md5 > $@
 
+build/boot.frm: build/boot.bin build/uboot-env.bin scripts/target_mtd_info.key
+	cat $^ | tee $@ | md5sum | cut -d ' ' -f1 | tee -a $@
+
 ### DFU update firmware file ###
 
 build/%.dfu: build/%.bin
@@ -115,7 +118,7 @@ clean:
 	rm -f $(notdir $(wildcard build/*))
 	rm -rf build/*
 
-zip-all:  build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu
+zip-all:  build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu build/boot.frm
 	zip -j build/plutosdr-fw-$(VERSION).zip $^
 
 dfu-pluto: build/pluto.dfu
