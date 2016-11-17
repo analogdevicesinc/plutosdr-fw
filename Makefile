@@ -71,8 +71,8 @@ build/pluto.itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz bui
 	u-boot-xlnx/tools/mkimage -f scripts/pluto.its $@
 
 build/system_top.hdf:  | build
-#	wget -N --directory-prefix build http://10.50.1.20/jenkins_export/hdl/dev/sdrstk_sdrstk/latest/system_top.hdf || bash -c "source $(VIVADO_SETTINGS) && cd hdl/projects/sdrstk/ && make"
-	wget -N --directory-prefix build http://10.50.1.20/jenkins_export/hdl/dev/sdrstk_sdrstk/latest/system_top.hdf
+#	wget -N --directory-prefix build http://10.50.1.20/jenkins_export/hdl/dev/pluto/latest/system_top.hdf || bash -c "source $(VIVADO_SETTINGS) && cd hdl/projects/pluto/ && make"
+	wget -N --directory-prefix build http://10.50.1.20/jenkins_export/hdl/dev/pluto/latest/system_top.hdf
 
 ### TODO: Build system_top.hdf from src if dl fails - need 2016.2 for that ...
 
@@ -122,15 +122,20 @@ zip-all:  build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu bui
 	zip -j build/plutosdr-fw-$(VERSION).zip $^
 
 dfu-pluto: build/pluto.dfu
-	dfu-util -D build/pluto.dfu -a 1
+	dfu-util -D build/pluto.dfu -a pluto.dfu
 	dfu-util -e
 
 dfu-sf-uboot: build/boot.dfu build/uboot-env.dfu
-	echo "Erasing u-boot be careful - Press Return to continue... " && read key  && dfu-util -D build/boot.dfu -a 0 && dfu-util -D build/uboot-env.dfu -a 2
+	echo "Erasing u-boot be careful - Press Return to continue... " && read key  && \
+		dfu-util -D build/boot.dfu -a boot.dfu && \
+		dfu-util -D build/uboot-env.dfu -a uboot-env.dfu
 	dfu-util -e
 
 dfu-all: build/pluto.dfu build/boot.dfu build/uboot-env.dfu
-	echo "Erasing u-boot be careful - Press Return to continue... " && read key && dfu-util -D build/pluto.dfu -a 1 && dfu-util -D build/boot.dfu -a 0 && dfu-util -D build/uboot-env.dfu -a 2
+	echo "Erasing u-boot be careful - Press Return to continue... " && read key && \
+		dfu-util -D build/pluto.dfu -a pluto.dfu && \
+		dfu-util -D build/boot.dfu -a boot.dfu  && \
+		dfu-util -D build/uboot-env.dfu -a uboot-env.dfu
 	dfu-util -e
 
 git-update-all:
