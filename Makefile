@@ -138,6 +138,13 @@ dfu-all: build/pluto.dfu build/boot.dfu build/uboot-env.dfu
 		dfu-util -D build/uboot-env.dfu -a uboot-env.dfu
 	dfu-util -e
 
+dfu-ram: build/pluto.dfu
+	sshpass -p analog ssh root@pluto '/usr/sbin/pluto_reboot ram;'
+	sleep 5
+	dfu-util -D build/pluto.dfu -a pluto.dfu
+	dfu-util -e
+
+
 git-update-all:
 	git submodule update --recursive --remote
 
