@@ -48,7 +48,7 @@ build/zImage: linux/arch/arm/boot/zImage  | build
 
 ### Device Tree ###
 
-linux/arch/arm/boot/dts/%.dtb: linux/arch/arm/boot/dts/%.dts
+linux/arch/arm/boot/dts/%.dtb: linux/arch/arm/boot/dts/%.dts  linux/arch/arm/boot/dts/%.dtsi
 	make -C linux -j $(NCORES) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) $(notdir $@)
 
 build/%.dtb: linux/arch/arm/boot/dts/%.dtb | build
