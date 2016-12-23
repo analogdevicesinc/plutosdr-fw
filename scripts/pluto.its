@@ -23,6 +23,14 @@
 			compression = "none";
 		};
 
+		fdt@2 {
+			description = "zynq-pluto-sdr-revb";
+			data = /incbin/("../build/zynq-pluto-sdr-revb.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+		};
+
 		fpga@1 {
 			description = "FPGA";
 			data = /incbin/("../build/system_top.bit");
@@ -78,5 +86,14 @@
 			ramdisk = "ramdisk@1";
 			fpga = "fpga@1";
 		};
+
+		config@3 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
 	};
 };

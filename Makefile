@@ -48,7 +48,7 @@ build/zImage: linux/arch/arm/boot/zImage  | build
 
 ### Device Tree ###
 
-linux/arch/arm/boot/dts/%.dtb: linux/arch/arm/boot/dts/%.dts  linux/arch/arm/boot/dts/%.dtsi
+linux/arch/arm/boot/dts/%.dtb: linux/arch/arm/boot/dts/%.dts  linux/arch/arm/boot/dts/zynq-pluto-sdr.dtsi
 	make -C linux -j $(NCORES) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) $(notdir $@)
 
 build/%.dtb: linux/arch/arm/boot/dts/%.dtb | build
@@ -67,7 +67,7 @@ buildroot/output/images/rootfs.cpio.gz:
 build/rootfs.cpio.gz: buildroot/output/images/rootfs.cpio.gz | build
 	cp $< $@
 
-build/pluto.itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz build/zynq-pluto-sdr.dtb  build/system_top.bit
+build/pluto.itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz build/zynq-pluto-sdr.dtb build/zynq-pluto-sdr-revb.dtb build/system_top.bit
 	u-boot-xlnx/tools/mkimage -f scripts/pluto.its $@
 
 build/system_top.hdf:  | build
