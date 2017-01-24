@@ -71,17 +71,28 @@
 	};
 
 	configurations {
-		default = "config@2";
-		config@1 {
-			description = "Linux";
+		default = "config@0";
+		config@0 {
+			description = "Linux with fpga RevA";
+			fdt = "fdt@1";
 			kernel = "linux_kernel@1";
 			ramdisk = "ramdisk@1";
-			fdt = "fdt@1";
+			fpga = "fpga@1";
+		};
+
+		/* all below is currently RevB ! */
+
+		config@1 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
 		};
 
 		config@2 {
-			description = "Linux with fpga";
-			fdt = "fdt@1";
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
 			kernel = "linux_kernel@1";
 			ramdisk = "ramdisk@1";
 			fpga = "fpga@1";
@@ -95,5 +106,61 @@
 			fpga = "fpga@1";
 		};
 
+		config@4 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@5 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@6 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+
+		config@7 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@8 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@9 { /* This one is actually RevB */
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@10 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
 	};
 };
