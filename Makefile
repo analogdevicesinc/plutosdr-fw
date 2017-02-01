@@ -57,7 +57,7 @@ build/%.dtb: linux/arch/arm/boot/dts/%.dtb | build
 ### Buildroot ###
 
 buildroot/output/images/rootfs.cpio.gz:
-	@echo plutosdr-fw $(VERSION)> $(CURDIR)/buildroot/board/pluto/VERSIONS
+	@echo device-fw $(VERSION)> $(CURDIR)/buildroot/board/pluto/VERSIONS
 	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(shell cd $(dir) && git describe --abbrev=4 --dirty --always --tags) >> $(CURDIR)/buildroot/board/pluto/VERSIONS;)
 	make -C buildroot ARCH=arm zynq_pluto_defconfig
 	make -C buildroot TOOLCHAIN_EXTERNAL_INSTALL_DIR= ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/pluto/busybox-1.25.0.config all
@@ -122,7 +122,7 @@ zip-all:  build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu bui
 	zip -j build/plutosdr-fw-$(VERSION).zip $^
 
 dfu-pluto: build/pluto.dfu
-	dfu-util -D build/pluto.dfu -a pluto.dfu
+	dfu-util -D build/pluto.dfu -a firmware.dfu
 	dfu-util -e
 
 dfu-sf-uboot: build/boot.dfu build/uboot-env.dfu
@@ -133,7 +133,7 @@ dfu-sf-uboot: build/boot.dfu build/uboot-env.dfu
 
 dfu-all: build/pluto.dfu build/boot.dfu build/uboot-env.dfu
 	echo "Erasing u-boot be careful - Press Return to continue... " && read key && \
-		dfu-util -D build/pluto.dfu -a pluto.dfu && \
+		dfu-util -D build/pluto.dfu -a firmware.dfu && \
 		dfu-util -D build/boot.dfu -a boot.dfu  && \
 		dfu-util -D build/uboot-env.dfu -a uboot-env.dfu
 	dfu-util -e
@@ -141,7 +141,7 @@ dfu-all: build/pluto.dfu build/boot.dfu build/uboot-env.dfu
 dfu-ram: build/pluto.dfu
 	sshpass -p analog ssh root@pluto '/usr/sbin/pluto_reboot ram;'
 	sleep 5
-	dfu-util -D build/pluto.dfu -a pluto.dfu
+	dfu-util -D build/pluto.dfu -a firmware.dfu
 	dfu-util -e
 
 
