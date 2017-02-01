@@ -139,7 +139,7 @@ dfu-all: build/pluto.dfu build/boot.dfu build/uboot-env.dfu
 	dfu-util -e
 
 dfu-ram: build/pluto.dfu
-	sshpass -p analog ssh root@pluto '/usr/sbin/pluto_reboot ram;'
+	sshpass -p analog ssh root@pluto '/usr/sbin/device_reboot ram;'
 	sleep 5
 	dfu-util -D build/pluto.dfu -a firmware.dfu
 	dfu-util -e
