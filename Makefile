@@ -3,7 +3,7 @@
 CROSS_COMPILE ?= arm-xilinx-linux-gnueabi-
 
 NCORES = $(shell grep -c ^processor /proc/cpuinfo)
-VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/2015.4/settings64.sh
+VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/2016.2/settings64.sh
 VSUBDIRS = hdl buildroot linux
 
 VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
@@ -71,12 +71,13 @@ build/pluto.itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz bui
 	u-boot-xlnx/tools/mkimage -f scripts/pluto.its $@
 
 build/system_top.hdf:  | build
-#	wget -N --directory-prefix build http://10.50.1.20/jenkins_export/hdl/dev/pluto/latest/system_top.hdf || bash -c "source $(VIVADO_SETTINGS) && cd hdl/projects/pluto/ && make"
-	wget -N --directory-prefix build http://10.50.1.20/jenkins_export/hdl/dev/pluto/latest/system_top.hdf
+#	wget -T 3 -t 1 -N --directory-prefix build http://10.50.1.20/jenkins_export/hdl/dev/pluto/latest/system_top.hdf || bash -c "source $(VIVADO_SETTINGS) && make -C hdl projects/pluto && cp hdl/projects/pluto/pluto.sdk/system_top.hdf $@"
+	bash -c "source $(VIVADO_SETTINGS) && make -C hdl projects/pluto && cp hdl/projects/pluto/pluto.sdk/system_top.hdf $@"
 
 ### TODO: Build system_top.hdf from src if dl fails - need 2016.2 for that ...
 
 build/sdk/fsbl/Release/fsbl.elf build/sdk/hw_0/system_top.bit : build/system_top.hdf
+	rm -Rf build/sdk
 	bash -c "source $(VIVADO_SETTINGS) && xsdk -batch -source scripts/create_fsbl_project.tcl"
 
 build/system_top.bit: build/sdk/hw_0/system_top.bit
@@ -115,6 +116,7 @@ clean:
 	make -C u-boot-xlnx clean
 	make -C linux clean
 	make -C buildroot clean
+	make -C hdl clean
 	rm -f $(notdir $(wildcard build/*))
 	rm -rf build/*
 
