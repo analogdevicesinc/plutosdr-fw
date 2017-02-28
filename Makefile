@@ -72,7 +72,7 @@ build/pluto.itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz bui
 
 build/system_top.hdf:  | build
 #	wget -T 3 -t 1 -N --directory-prefix build http://10.50.1.20/jenkins_export/hdl/dev/pluto/latest/system_top.hdf || bash -c "source $(VIVADO_SETTINGS) && make -C hdl projects/pluto && cp hdl/projects/pluto/pluto.sdk/system_top.hdf $@"
-	bash -c "source $(VIVADO_SETTINGS) && make -C hdl projects/pluto && cp hdl/projects/pluto/pluto.sdk/system_top.hdf $@"
+	bash -c "source $(VIVADO_SETTINGS) && make -C hdl/projects/pluto && cp hdl/projects/pluto/pluto.sdk/system_top.hdf $@"
 
 ### TODO: Build system_top.hdf from src if dl fails - need 2016.2 for that ...
 
