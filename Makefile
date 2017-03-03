@@ -9,7 +9,15 @@ VSUBDIRS = hdl buildroot linux
 VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
 UBOOT_VERSION=$(shell echo -n "PlutoSDR " && cd u-boot-xlnx && git describe --abbrev=0 --dirty --always --tags)
 
-all: build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu build/boot.frm
+
+ifeq (, $(shell which dfu-suffix))
+$(warning "No dfu-utils in PATH consider doing: sudo apt-get install dfu-util")
+TARGETS = build/pluto.frm build/boot.frm
+else
+TARGETS = build/pluto.dfu build/boot.dfu build/uboot-env.dfu build/pluto.frm build/boot.frm
+endif
+
+all: $(TARGETS) zip-all jtag-bootstrap
 
 build:
 	mkdir -p $@
@@ -120,7 +128,7 @@ clean:
 	rm -f $(notdir $(wildcard build/*))
 	rm -rf build/*
 
-zip-all:  build/pluto.dfu build/pluto.frm build/boot.dfu build/uboot-env.dfu build/boot.frm
+zip-all:  $(TARGETS)
 	zip -j build/plutosdr-fw-$(VERSION).zip $^
 
 dfu-pluto: build/pluto.dfu
@@ -146,6 +154,9 @@ dfu-ram: build/pluto.dfu
 	dfu-util -D build/pluto.dfu -a firmware.dfu
 	dfu-util -e
 
+jtag-bootstrap: build/u-boot.elf build/sdk/hw_0/ps7_init.tcl build/sdk/hw_0/system_top.bit scripts/run.tcl
+	$(CROSS_COMPILE)strip build/u-boot.elf
+	zip -j build/plutosdr-$@-$(VERSION).zip $^
 
 git-update-all:
 	git submodule update --recursive --remote
