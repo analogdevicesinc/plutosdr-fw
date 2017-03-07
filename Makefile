@@ -128,7 +128,7 @@ clean:
 	rm -f $(notdir $(wildcard build/*))
 	rm -rf build/*
 
-zip-all:  $(TARGETS)
+zip-all: $(TARGETS)
 	zip -j build/plutosdr-fw-$(VERSION).zip $^
 
 dfu-pluto: build/pluto.dfu
