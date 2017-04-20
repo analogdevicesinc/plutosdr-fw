@@ -8,8 +8,8 @@ PlutoSDR Firmware
       git clone --recursive https://github.com/analogdevicesinc/plutosdr-fw.git
       cd plutosdr-fw
       export CROSS_COMPILE=arm-xilinx-linux-gnueabi-
-      export PATH=$PATH:/opt/Xilinx/SDK/2015.4/gnu/arm/lin/bin
-      export VIVADO_SETTINGS=/opt/Xilinx/Vivado/2015.4/settings64.sh
+      export PATH=$PATH:/opt/Xilinx/SDK/2016.2/gnu/arm/lin/bin
+      export VIVADO_SETTINGS=/opt/Xilinx/Vivado/2016.2/settings64.sh
       make
  
  ```
@@ -22,35 +22,41 @@ PlutoSDR Firmware
 * Build Artifacts
  ```bash
       michael@HAL9000:~/devel/plutosdr-fw$ ls -AGhl build
-      total 30M
-      -rw-rw-r-- 1 michael   69 Nov 10 17:17 boot.bif
-      -rw-rw-r-- 1 michael 485K Nov 10 17:17 boot.bin
-      -rw-rw-r-- 1 michael 485K Nov 10 17:17 boot.dfu
-      -rw-rw-r-- 1 michael 6,4M Nov 10 17:17 pluto.dfu
-      -rw-rw-r-- 1 michael 6,4M Nov 10 17:17 pluto.frm
-      -rw-rw-r-- 1 michael   33 Nov 10 17:17 pluto.frm.md5
-      -rw-rw-r-- 1 michael 6,4M Nov 10 17:17 pluto.itb
-      -rw-r--r-- 1 michael 2,8M Nov 10 17:17 rootfs.cpio.gz
-      drwxrwxr-x 6 michael 4,0K Nov 10 17:17 sdk
-      -rw-rw-r-- 1 michael  81K Nov 10 17:17 system_bd.tcl
-      -rw-rw-r-- 1 michael 941K Nov 10 17:17 system_top.bit
-      -rw-rw-r-- 1 michael 399K Okt 27 18:46 system_top.hdf
-      -rwxrwxr-x 1 michael 2,5M Nov 10 17:17 u-boot.elf
-      -rw-rw---- 1 michael 128K Nov 10 17:17 uboot-env.bin
-      -rw-rw---- 1 michael 129K Nov 10 17:17 uboot-env.dfu
-      -rw-rw-r-- 1 michael 3,9K Nov 10 17:17 uboot-env.txt
-      -rwxrwxr-x 1 michael 2,7M Nov 10 17:17 zImage
-      -rw-rw-r-- 1 michael  16K Nov 10 17:17 zynq-pluto-sdr.dtb   
+      total 52M
+      -rw-rw-r-- 1 michael   69 Apr 19 17:45 boot.bif
+      -rw-rw-r-- 1 michael 446K Apr 19 17:45 boot.bin
+      -rw-rw-r-- 1 michael 446K Apr 19 17:45 boot.dfu
+      -rw-rw-r-- 1 michael 575K Apr 19 17:45 boot.frm
+      -rw-rw-r-- 1 michael 8,3M Apr 19 17:45 pluto.dfu
+      -rw-rw-r-- 1 michael 8,3M Apr 19 17:45 pluto.frm
+      -rw-rw-r-- 1 michael   33 Apr 19 17:45 pluto.frm.md5
+      -rw-rw-r-- 1 michael 8,3M Apr 19 17:45 pluto.itb
+      -rw-rw-r-- 1 michael  16M Apr 19 17:45 plutosdr-fw-v0.20.zip
+      -rw-rw-r-- 1 michael 471K Apr 19 17:45 plutosdr-jtag-bootstrap-v0.20.zip
+      -rw-r--r-- 1 michael 4,2M Apr 19 17:39 rootfs.cpio.gz
+      drwxrwxr-x 6 michael 4,0K Apr 19 17:45 sdk
+      -rw-rw-r-- 1 michael 940K Apr 19 17:45 system_top.bit
+      -rw-rw-r-- 1 michael 362K Apr 19 17:45 system_top.hdf
+      -rwxrwxr-x 1 michael 409K Apr 19 17:45 u-boot.elf
+      -rw-rw---- 1 michael 128K Apr 19 17:45 uboot-env.bin
+      -rw-rw---- 1 michael 129K Apr 19 17:45 uboot-env.dfu
+      -rw-rw-r-- 1 michael 4,6K Apr 19 17:45 uboot-env.txt
+      -rwxrwxr-x 1 michael 3,2M Apr 19 17:33 zImage
+      -rw-rw-r-- 1 michael  16K Apr 19 17:39 zynq-pluto-sdr.dtb
+      -rw-rw-r-- 1 michael  16K Apr 19 17:39 zynq-pluto-sdr-revb.dtb 
  ```
  
  * Main targets
  
      | File  | Comment |
-     | ------------- | ------------- |
+     | ------------- | ------------- | 
      | pluto.frm | Main PlutoSDR firmware file used with the USB Mass Storage Device |
      | pluto.dfu | Main PlutoSDR firmware file used in DFU mode |
+     | boot.frm  | First and Second Stage Bootloader (u-boot + fsbl + uEnv) used with the USB Mass Storage Device |
      | boot.dfu  | First and Second Stage Bootloader (u-boot + fsbl) used in DFU mode |
      | uboot-env.dfu  | u-boot default environment used in DFU mode |
+     | plutosdr-fw-vX.XX.zip  | ZIP archive containg all of the files above |  
+     | plutosdr-jtag-bootstrap-vX.XX.zip  | ZIP archive containg u-boot and Vivao TCL used for JATG bootstrapping |       
  
   * Other intermediate targets
 
@@ -68,7 +74,8 @@ PlutoSDR Firmware
      | uboot-env.bin | u-boot default environment in binary format created form uboot-env.txt |
      | uboot-env.txt | u-boot default environment in human readable text format |
      | zImage | Compressed Linux Kernel Image |
-     | zynq-pluto-sdr.dtb | Device Tree Blob |
+     | zynq-pluto-sdr.dtb | Device Tree Blob for Rev.A |
+     | zynq-pluto-sdr-revb.dtb | Device Tree Blob for Rev.B|     
 
  
 
