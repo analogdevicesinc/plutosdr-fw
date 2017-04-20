@@ -1,5 +1,5 @@
 # plutosdr-fw
-PlutoSDR Firmware
+PlutoSDR Firmware for the [ADALM-PLUTO](https://wiki.analog.com/university/tools/pluto "PlutoSDR Wiki Page") Active Learning Module
 
 
 * Build Instructions
