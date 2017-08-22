@@ -1,6 +1,7 @@
 # plutosdr-fw
 PlutoSDR Firmware for the [ADALM-PLUTO](https://wiki.analog.com/university/tools/pluto "PlutoSDR Wiki Page") Active Learning Module
 
+Latest binary Release : [![GitHub release](https://img.shields.io/github/release/analogdevicesinc/plutosdr-fw.svg)](https://github.com/analogdevicesinc/plutosdr-fw/releases/latest)
 
 * Build Instructions
  ```bash
