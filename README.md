@@ -3,6 +3,10 @@ PlutoSDR Firmware for the [ADALM-PLUTO](https://wiki.analog.com/university/tools
 
 Latest binary Release : [![GitHub release](https://img.shields.io/github/release/analogdevicesinc/plutosdr-fw.svg)](https://github.com/analogdevicesinc/plutosdr-fw/releases/latest)
 
+* The major requirements
+  - [VIVADO 2016.4](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/2016-4.html)
+  - glic that supports multilib (for building uboot it's necessary to run a 32bit binary but for VIVADO you need 64bit)
+
 * Build Instructions
  ```bash
  

@@ -32,4 +32,7 @@
 *.dSYM/
 *.su
 
+# Vim backup files
+*~
+
 build/
