@@ -28,8 +28,8 @@ build:
 ### u-boot ###
 
 u-boot-xlnx/u-boot u-boot-xlnx/tools/mkimage:
-	make -C u-boot-xlnx ARCH=arm zynq_pluto_defconfig
-	make -C u-boot-xlnx ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) UBOOTVERSION="$(UBOOT_VERSION)"
+	make -j2 -C u-boot-xlnx ARCH=arm zynq_pluto_defconfig
+	make -j2 -C u-boot-xlnx ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) UBOOTVERSION="$(UBOOT_VERSION)"
 
 .PHONY: u-boot-xlnx/u-boot
 
@@ -45,8 +45,8 @@ build/uboot-env.bin: build/uboot-env.txt
 ### Linux ###
 
 linux/arch/arm/boot/zImage:
-	make -C linux ARCH=arm zynq_pluto_defconfig
-	make -C linux -j $(NCORES) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) zImage UIMAGE_LOADADDR=0x8000
+	make -j2 -C linux ARCH=arm zynq_pluto_defconfig
+	make -j2 -C linux -j $(NCORES) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) zImage UIMAGE_LOADADDR=0x8000
 
 .PHONY: linux/arch/arm/boot/zImage
 
