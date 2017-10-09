@@ -13,4 +13,4 @@
 [submodule "hdl"]
 	path = hdl
 	url = https://github.com/analogdevicesinc/hdl
-	branch = dev
+	branch = hdl_2016_r2
