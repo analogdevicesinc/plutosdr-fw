@@ -3,7 +3,7 @@
 CROSS_COMPILE ?= arm-xilinx-linux-gnueabi-
 
 NCORES = $(shell grep -c ^processor /proc/cpuinfo)
-VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/2016.2/settings64.sh
+VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/2016.4/settings64.sh
 VSUBDIRS = hdl buildroot linux
 
 VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
