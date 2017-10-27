@@ -75,7 +75,7 @@ buildroot/output/images/rootfs.cpio.gz:
 build/rootfs.cpio.gz: buildroot/output/images/rootfs.cpio.gz | build
 	cp $< $@
 
-build/pluto.itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz build/zynq-pluto-sdr.dtb build/zynq-pluto-sdr-revb.dtb build/system_top.bit
+build/pluto.itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz build/zynq-pluto-sdr.dtb build/zynq-pluto-sdr-revb.dtb build/zynq-pluto-sdr-revc.dtb build/system_top.bit
 	u-boot-xlnx/tools/mkimage -f scripts/pluto.its $@
 
 build/system_top.hdf:  | build
