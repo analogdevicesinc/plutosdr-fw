@@ -33,7 +33,7 @@
 
 		fdt@3 {
 			description = "zynq-pluto-sdr-revc";
-			data = /incbin/("../build/zynq-pluto-sdr-revb.dtc");
+			data = /incbin/("../build/zynq-pluto-sdr-revb.dtb");
 			type = "flat_dt";
 			arch = "arm";
 			compression = "none";
