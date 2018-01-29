@@ -17,12 +17,13 @@ Latest binary Release : [![GitHub release](https://img.shields.io/github/release
       make
  
  ```
- 
+   
  * Updating your local repository 
  ```bash 
-      git pull --recurse-submodules
+      git pull
+      git submodule update --init --recursive
   ```
- 
+   
 * Build Artifacts
  ```bash
       michael@HAL9000:~/devel/plutosdr-fw$ ls -AGhl build
