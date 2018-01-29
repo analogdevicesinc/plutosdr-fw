@@ -3,9 +3,12 @@ PlutoSDR Firmware for the [ADALM-PLUTO](https://wiki.analog.com/university/tools
 
 Latest binary Release : [![GitHub release](https://img.shields.io/github/release/analogdevicesinc/plutosdr-fw.svg)](https://github.com/analogdevicesinc/plutosdr-fw/releases/latest)
 
+[Instructions from the Wiki: Building the image](https://wiki.analog.com/university/tools/pluto/building_the_image)
+
 * Build Instructions
  ```bash
- 
+      sudo apt-get install git build-essential fakeroot libncurses5-dev libssl-dev ccache 
+      sudo apt-get install dfu-util u-boot-tools device-tree-compiler libssl1.0-dev mtools
       git clone --recursive https://github.com/analogdevicesinc/plutosdr-fw.git
       cd plutosdr-fw
       export CROSS_COMPILE=arm-xilinx-linux-gnueabi-
