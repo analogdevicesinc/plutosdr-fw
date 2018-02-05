@@ -161,6 +161,10 @@ jtag-bootstrap: build/u-boot.elf build/sdk/hw_0/ps7_init.tcl build/sdk/hw_0/syst
 sysroot: buildroot/output/images/rootfs.cpio.gz
 	tar czfh build/sysroot-$(VERSION).tar.gz --hard-dereference --exclude=usr/share/man -C buildroot/output staging
 
+legal-info: buildroot/output/images/rootfs.cpio.gz
+	make -C buildroot legal-info
+	tar czvf build/legal-info-$(VERSION).tar.gz -C buildroot/output legal-info
+
 git-update-all:
 	git submodule update --recursive --remote
 
