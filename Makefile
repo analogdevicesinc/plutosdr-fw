@@ -7,17 +7,25 @@ VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/2016.4/settings64.sh
 VSUBDIRS = hdl buildroot linux
 
 VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
+LATEST_TAG=$(shell git describe --abbrev=0 --tags)
 UBOOT_VERSION=$(shell echo -n "PlutoSDR " && cd u-boot-xlnx && git describe --abbrev=0 --dirty --always --tags)
+HAVE_VIVADO= $(shell bash -c "source $(VIVADO_SETTINGS) > /dev/null 2>&1 && vivado -version > /dev/null 2>&1 && echo 1 || echo 0")
 
 
 ifeq (, $(shell which dfu-suffix))
 $(warning "No dfu-utils in PATH consider doing: sudo apt-get install dfu-util")
-TARGETS = build/pluto.frm build/boot.frm
+TARGETS = build/pluto.frm
+ifeq (1, ${HAVE_VIVADO})
+TARGETS += build/boot.frm jtag-bootstrap
+endif
 else
-TARGETS = build/pluto.dfu build/boot.dfu build/uboot-env.dfu build/pluto.frm build/boot.frm
+TARGETS = build/pluto.dfu build/uboot-env.dfu build/pluto.frm
+ifeq (1, ${HAVE_VIVADO})
+TARGETS += build/boot.dfu build/boot.frm jtag-bootstrap
+endif
 endif
 
-all: $(TARGETS) zip-all jtag-bootstrap
+all: $(TARGETS) zip-all
 
 build:
 	mkdir -p $@
@@ -79,14 +87,22 @@ build/pluto.itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz bui
 	u-boot-xlnx/tools/mkimage -f scripts/pluto.its $@
 
 build/system_top.hdf:  | build
-#	wget -T 3 -t 1 -N --directory-prefix build http://10.50.1.20/jenkins_export/hdl/dev/pluto/latest/system_top.hdf || bash -c "source $(VIVADO_SETTINGS) && make -C hdl projects/pluto && cp hdl/projects/pluto/pluto.sdk/system_top.hdf $@"
+ifeq (1, ${HAVE_VIVADO})
 	bash -c "source $(VIVADO_SETTINGS) && make -C hdl/projects/pluto && cp hdl/projects/pluto/pluto.sdk/system_top.hdf $@"
+else
+	wget -T 3 -t 1 -N --directory-prefix build http://github.com/analogdevicesinc/plutosdr-fw/releases/download/${LATEST_TAG}/system_top.hdf
+endif
 
 ### TODO: Build system_top.hdf from src if dl fails - need 2016.2 for that ...
 
 build/sdk/fsbl/Release/fsbl.elf build/sdk/hw_0/system_top.bit : build/system_top.hdf
 	rm -Rf build/sdk
+ifeq (1, ${HAVE_VIVADO})
 	bash -c "source $(VIVADO_SETTINGS) && xsdk -batch -source scripts/create_fsbl_project.tcl"
+else
+	mkdir -p build/sdk/hw_0
+	unzip -o build/system_top.hdf system_top.bit -d build/sdk/hw_0
+endif
 
 build/system_top.bit: build/sdk/hw_0/system_top.bit
 	cp $< $@
