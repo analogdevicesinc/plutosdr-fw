@@ -4,7 +4,7 @@ CROSS_COMPILE ?= arm-xilinx-linux-gnueabi-
 
 NCORES = $(shell grep -c ^processor /proc/cpuinfo)
 VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/2016.4/settings64.sh
-VSUBDIRS = hdl buildroot linux
+VSUBDIRS = hdl buildroot linux u-boot-xlnx
 
 VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
 LATEST_TAG=$(shell git describe --abbrev=0 --tags)
@@ -25,7 +25,7 @@ TARGETS += build/boot.dfu build/boot.frm jtag-bootstrap
 endif
 endif
 
-all: $(TARGETS) zip-all
+all: $(TARGETS) zip-all legal-info
 
 build:
 	mkdir -p $@
@@ -76,6 +76,9 @@ buildroot/output/images/rootfs.cpio.gz:
 	@echo device-fw $(VERSION)> $(CURDIR)/buildroot/board/pluto/VERSIONS
 	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(shell cd $(dir) && git describe --abbrev=4 --dirty --always --tags) >> $(CURDIR)/buildroot/board/pluto/VERSIONS;)
 	make -C buildroot ARCH=arm zynq_pluto_defconfig
+	make -C buildroot legal-info
+	scripts/legal_info_html.sh "PlutoSDR" "$(CURDIR)/buildroot/board/pluto/VERSIONS"
+	cp build/LICENSE.html buildroot/board/pluto/msd/LICENSE.html
 	make -C buildroot TOOLCHAIN_EXTERNAL_INSTALL_DIR= ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/pluto/busybox-1.25.0.config all
 
 .PHONY: buildroot/output/images/rootfs.cpio.gz
@@ -178,7 +181,6 @@ sysroot: buildroot/output/images/rootfs.cpio.gz
 	tar czfh build/sysroot-$(VERSION).tar.gz --hard-dereference --exclude=usr/share/man -C buildroot/output staging
 
 legal-info: buildroot/output/images/rootfs.cpio.gz
-	make -C buildroot legal-info
 	tar czvf build/legal-info-$(VERSION).tar.gz -C buildroot/output legal-info
 
 git-update-all:
