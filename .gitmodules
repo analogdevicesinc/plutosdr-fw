@@ -9,7 +9,7 @@
 [submodule "linux"]
 	path = linux
 	url = https://github.com/analogdevicesinc/linux
-	branch = xcomm_zynq
+	branch = 2018_R1
 [submodule "hdl"]
 	path = hdl
 	url = https://github.com/analogdevicesinc/hdl
