@@ -13,7 +13,7 @@ With the potential exception of certain firmware files, the license terms of com
 ADALM-PLUTO SDR firmware normally permit you to copy, modify, and redistribute the component, in both source code
 and binary code forms.
 
-You are free to re-use any indivual or multiple components in an end product that you create, but it is up to you and 
+You are free to re-use any individual or multiple components in an end product that you create, but it is up to you and
 your legal team to make sure your product complies with the licensing requirements of whatever software package that 
 you include in your product.
 
