@@ -11,21 +11,34 @@ LATEST_TAG=$(shell git describe --abbrev=0 --tags)
 UBOOT_VERSION=$(shell echo -n "PlutoSDR " && cd u-boot-xlnx && git describe --abbrev=0 --dirty --always --tags)
 HAVE_VIVADO= $(shell bash -c "source $(VIVADO_SETTINGS) > /dev/null 2>&1 && vivado -version > /dev/null 2>&1 && echo 1 || echo 0")
 
+TARGET ?= pluto
+SUPPORTED_TARGETS:=pluto sidekiqz2
+
+# Include target specific constants
+include scripts/$(TARGET).mk
 
 ifeq (, $(shell which dfu-suffix))
 $(warning "No dfu-utils in PATH consider doing: sudo apt-get install dfu-util")
-TARGETS = build/pluto.frm
+TARGETS = build/$(TARGET).frm
 ifeq (1, ${HAVE_VIVADO})
 TARGETS += build/boot.frm jtag-bootstrap
 endif
 else
-TARGETS = build/pluto.dfu build/uboot-env.dfu build/pluto.frm
+TARGETS = build/$(TARGET).dfu build/uboot-env.dfu build/$(TARGET).frm
 ifeq (1, ${HAVE_VIVADO})
 TARGETS += build/boot.dfu build/boot.frm jtag-bootstrap
 endif
 endif
 
+ifeq ($(findstring $(TARGET),$(SUPPORTED_TARGETS)),)
+all:
+	@echo "Invalid `TARGET variable ; valid values are: pluto, sidekiqz2" &&
+	exit 1
+else
 all: $(TARGETS) zip-all legal-info
+endif
+
+TARGET_DTS_FILES:=$(foreach dts,$(TARGET_DTS_FILES),build/$(dts))
 
 build:
 	mkdir -p $@
@@ -36,7 +49,7 @@ build:
 ### u-boot ###
 
 u-boot-xlnx/u-boot u-boot-xlnx/tools/mkimage:
-	make -C u-boot-xlnx ARCH=arm zynq_pluto_defconfig
+	make -C u-boot-xlnx ARCH=arm zynq_$(TARGET)_defconfig
 	make -C u-boot-xlnx ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) UBOOTVERSION="$(UBOOT_VERSION)"
 
 .PHONY: u-boot-xlnx/u-boot
@@ -53,7 +66,7 @@ build/uboot-env.bin: build/uboot-env.txt
 ### Linux ###
 
 linux/arch/arm/boot/zImage:
-	make -C linux ARCH=arm zynq_pluto_defconfig
+	make -C linux ARCH=arm zynq_$(TARGET)_defconfig
 	make -C linux -j $(NCORES) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) zImage UIMAGE_LOADADDR=0x8000
 
 .PHONY: linux/arch/arm/boot/zImage
@@ -73,27 +86,29 @@ build/%.dtb: linux/arch/arm/boot/dts/%.dtb | build
 ### Buildroot ###
 
 buildroot/output/images/rootfs.cpio.gz:
-	@echo device-fw $(VERSION)> $(CURDIR)/buildroot/board/pluto/VERSIONS
-	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(shell cd $(dir) && git describe --abbrev=4 --dirty --always --tags) >> $(CURDIR)/buildroot/board/pluto/VERSIONS;)
-	make -C buildroot ARCH=arm zynq_pluto_defconfig
+	@echo device-fw $(VERSION)> $(CURDIR)/buildroot/board/$(TARGET)/VERSIONS
+	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(shell cd $(dir) && git describe --abbrev=4 --dirty --always --tags) >> $(CURDIR)/buildroot/board/$(TARGET)/VERSIONS;)
+	make -C buildroot ARCH=arm zynq_$(TARGET)_defconfig
 	make -C buildroot legal-info
-	scripts/legal_info_html.sh "PlutoSDR" "$(CURDIR)/buildroot/board/pluto/VERSIONS"
-	cp build/LICENSE.html buildroot/board/pluto/msd/LICENSE.html
-	make -C buildroot TOOLCHAIN_EXTERNAL_INSTALL_DIR= ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/pluto/busybox-1.25.0.config all
+	scripts/legal_info_html.sh "$(COMPLETE_NAME)" "$(CURDIR)/buildroot/board/$(TARGET)/VERSIONS"
+	cp build/LICENSE.html buildroot/board/$(TARGET)/msd/LICENSE.html
+	make -C buildroot TOOLCHAIN_EXTERNAL_INSTALL_DIR= ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/$(TARGET)/busybox-1.25.0.config all
 
 .PHONY: buildroot/output/images/rootfs.cpio.gz
 
 build/rootfs.cpio.gz: buildroot/output/images/rootfs.cpio.gz | build
 	cp $< $@
 
-build/pluto.itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz build/zynq-pluto-sdr.dtb build/zynq-pluto-sdr-revb.dtb build/zynq-pluto-sdr-revc.dtb build/system_top.bit
-	u-boot-xlnx/tools/mkimage -f scripts/pluto.its $@
+build/$(TARGET).itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz $(TARGET_DTS_FILES) build/system_top.bit
+	u-boot-xlnx/tools/mkimage -f scripts/$(TARGET).its $@
 
 build/system_top.hdf:  | build
 ifeq (1, ${HAVE_VIVADO})
-	bash -c "source $(VIVADO_SETTINGS) && make -C hdl/projects/pluto && cp hdl/projects/pluto/pluto.sdk/system_top.hdf $@"
+	bash -c "source $(VIVADO_SETTINGS) && make -C hdl/projects/$(TARGET) && cp hdl/projects/$(TARGET)/$(TARGET).sdk/system_top.hdf $@"
 else
-	wget -T 3 -t 1 -N --directory-prefix build http://github.com/analogdevicesinc/plutosdr-fw/releases/download/${LATEST_TAG}/system_top.hdf
+ifneq ($(HDF_URL),)
+	wget -T 3 -t 1 -N --directory-prefix build $(HDF_URL)
+endif
 endif
 
 ### TODO: Build system_top.hdf from src if dl fails - need 2016.2 for that ...
@@ -116,7 +131,7 @@ build/boot.bin: build/sdk/fsbl/Release/fsbl.elf build/u-boot.elf
 
 ### MSD update firmware file ###
 
-build/pluto.frm: build/pluto.itb
+build/$(TARGET).frm: build/$(TARGET).itb
 	md5sum $< | cut -d ' ' -f 1 > $@.md5
 	cat $< $@.md5 > $@
 
@@ -127,12 +142,12 @@ build/boot.frm: build/boot.bin build/uboot-env.bin scripts/target_mtd_info.key
 
 build/%.dfu: build/%.bin
 	cp $< $<.tmp
-	dfu-suffix -a $<.tmp -v 0x0456 -p 0xb673
+	dfu-suffix -a $<.tmp -v $(DEVICE_VID) -p $(DEVICE_PID)
 	mv $<.tmp $@
 
-build/pluto.dfu: build/pluto.itb
+build/$(TARGET).dfu: build/$(TARGET).itb
 	cp $< $<.tmp
-	dfu-suffix -a $<.tmp -v 0x0456 -p 0xb673
+	dfu-suffix -a $<.tmp -v $(DEVICE_VID) -p $(DEVICE_PID)
 	mv $<.tmp $@
 
 clean-build:
@@ -148,10 +163,10 @@ clean:
 	rm -rf build/*
 
 zip-all: $(TARGETS)
-	zip -j build/plutosdr-fw-$(VERSION).zip $^
+	zip -j build/$(ZIP_ARCHIVE_PREFIX)-fw-$(VERSION).zip $^
 
-dfu-pluto: build/pluto.dfu
-	dfu-util -D build/pluto.dfu -a firmware.dfu
+dfu-$(TARGET): build/$(TARGET).dfu
+	dfu-util -D build/$(TARGET).dfu -a firmware.dfu
 	dfu-util -e
 
 dfu-sf-uboot: build/boot.dfu build/uboot-env.dfu
@@ -160,22 +175,22 @@ dfu-sf-uboot: build/boot.dfu build/uboot-env.dfu
 		dfu-util -D build/uboot-env.dfu -a uboot-env.dfu
 	dfu-util -e
 
-dfu-all: build/pluto.dfu build/boot.dfu build/uboot-env.dfu
+dfu-all: build/$(TARGET).dfu build/boot.dfu build/uboot-env.dfu
 	echo "Erasing u-boot be careful - Press Return to continue... " && read key && \
-		dfu-util -D build/pluto.dfu -a firmware.dfu && \
+		dfu-util -D build/$(TARGET).dfu -a firmware.dfu && \
 		dfu-util -D build/boot.dfu -a boot.dfu  && \
 		dfu-util -D build/uboot-env.dfu -a uboot-env.dfu
 	dfu-util -e
 
-dfu-ram: build/pluto.dfu
-	sshpass -p analog ssh root@pluto '/usr/sbin/device_reboot ram;'
+dfu-ram: build/$(TARGET).dfu
+	sshpass -p analog ssh root@$(TARGET) '/usr/sbin/device_reboot ram;'
 	sleep 5
-	dfu-util -D build/pluto.dfu -a firmware.dfu
+	dfu-util -D build/$(TARGET).dfu -a firmware.dfu
 	dfu-util -e
 
 jtag-bootstrap: build/u-boot.elf build/sdk/hw_0/ps7_init.tcl build/sdk/hw_0/system_top.bit scripts/run.tcl
 	$(CROSS_COMPILE)strip build/u-boot.elf
-	zip -j build/plutosdr-$@-$(VERSION).zip $^
+	zip -j build/$(ZIP_ARCHIVE_PREFIX)-$@-$(VERSION).zip $^
 
 sysroot: buildroot/output/images/rootfs.cpio.gz
 	tar czfh build/sysroot-$(VERSION).tar.gz --hard-dereference --exclude=usr/share/man -C buildroot/output staging
