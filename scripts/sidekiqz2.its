@@ -1,0 +1,174 @@
+/*
+ * U-Boot uImage source file with multiple kernels, ramdisks and FDT blobs
+ * This example makes use of the 'loadables' field
+ */
+
+/*
+ * fdt get addr foo /images/fdt@1 data
+ */
+
+/dts-v1/;
+
+/ {
+	description = "Configuration to load fpga before Kernel";
+	magic = "ITB Sidekiq Z2";
+	#address-cells = <1>;
+	images {
+
+		fdt@1 {
+			description = "zynq-sidekiqz2";
+			data = /incbin/("../build/zynq-sidekiqz2-revb.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+		};
+
+		fdt@2 {
+			description = "zynq-sidekiqz2-revb";
+			data = /incbin/("../build/zynq-sidekiqz2-revb.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+		};
+
+		fdt@3 {
+			description = "zynq-sidekiqz2-revc";
+			data = /incbin/("../build/zynq-sidekiqz2-revb.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+		};
+
+		fpga@1 {
+			description = "FPGA";
+			data = /incbin/("../build/system_top.bit");
+			type = "fpga";
+			arch = "arm";
+			compression = "none";
+			load = <0xF000000>;
+			hash@1 {
+				algo = "md5";
+			};
+		};
+
+		linux_kernel@1 {
+			description = "Linux";
+			data = /incbin/("../build/zImage");
+			type = "kernel";
+			arch = "arm";
+			os = "linux";
+			compression = "none";
+			load = <0x8000>;
+			entry = <0x8000>;
+			hash@1 {
+				algo = "md5";
+			};
+		};
+		ramdisk@1 {
+			description = "Ramdisk";
+			data = /incbin/("../build/rootfs.cpio.gz");
+			type = "ramdisk";
+			arch = "arm";
+			os = "linux";
+			compression = "gzip";
+			hash@1 {
+				algo = "md5";
+			};
+		};
+
+	};
+
+	configurations {
+		default = "config@0";
+		config@0 {
+			description = "Linux with fpga RevA";
+			fdt = "fdt@1";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		/* all below is currently RevB ! */
+
+		config@1 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@2 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@3 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@4 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@5 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@6 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+
+		config@7 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@8 { /* This one is actually RevC */
+			description = "Linux with fpga RevC";
+			fdt = "fdt@3";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@9 { /* This one is actually RevB */
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+
+		config@10 {
+			description = "Linux with fpga RevB";
+			fdt = "fdt@2";
+			kernel = "linux_kernel@1";
+			ramdisk = "ramdisk@1";
+			fpga = "fpga@1";
+		};
+	};
+};
