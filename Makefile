@@ -89,8 +89,8 @@ buildroot/output/images/rootfs.cpio.gz:
 	@echo device-fw $(VERSION)> $(CURDIR)/buildroot/board/$(TARGET)/VERSIONS
 	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(shell cd $(dir) && git describe --abbrev=4 --dirty --always --tags) >> $(CURDIR)/buildroot/board/$(TARGET)/VERSIONS;)
 	make -C buildroot ARCH=arm zynq_$(TARGET)_defconfig
-	make -C buildroot legal-info
-	scripts/legal_info_html.sh "$(COMPLETE_NAME)" "$(CURDIR)/buildroot/board/$(TARGET)/VERSIONS"
+	ADI_LEGAL=$(ADI_LEGAL) make -C buildroot legal-info
+	ADI_LEGAL=$(ADI_LEGAL) scripts/legal_info_html.sh "$(COMPLETE_NAME)" "$(CURDIR)/buildroot/board/$(TARGET)/VERSIONS"
 	cp build/LICENSE.html buildroot/board/$(TARGET)/msd/LICENSE.html
 	make -C buildroot TOOLCHAIN_EXTERNAL_INSTALL_DIR= ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/$(TARGET)/busybox-1.25.0.config all
 

@@ -259,8 +259,9 @@ echo "<div class="boxed">" >> ${FILE}
 html_h2 "Written Offer"
 
 echo "As described above, the firmware included in the ${TARGET} contains copyrighted software that is released and distributed under many licenses, including the GPL.
-A copy of the licenses are included in this file (below).
-You may obtain the complete Corresponding Source code from us for a period of three years after our last shipment of this product, which will be no earlier than 01Jan2021, by sending a money order or check for \$15 (USD) to:
+A copy of the licenses are included in this file (below)." >> ${FILE}
+if [ "$ADI_LEGAL" == "1" ] ; then
+echo "You may obtain the complete Corresponding Source code from us for a period of three years after our last shipment of this product, which will be no earlier than 01Jan2021, by sending a money order or check for \$15 (USD) to:
 <pre>
 GPL Compliance
 Systems Development Group
@@ -276,6 +277,9 @@ Please write “<i>source for the ${TARGET}</i>” in the memo line of your paym
 Since the source does not fit on a DVD-RW, it will be delivered on a USB Thumb drive (hense the higher cost than just DVD or CD).
 <p><b>You will also find a the source on-line, and are encouraged to obtain it for zero cost, at the project web sites.</b></p>
 </div>" >> ${FILE}
+else # not ADI_LEGAL
+echo "Since you, the end user built this from source, for ${TARGET}, and didn't get a binary, there is no requirement for a written offer." >> ${FILE}
+fi
 
 html_h2 "NO WARRANTY"
 
