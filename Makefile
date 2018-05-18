@@ -35,8 +35,10 @@ all:
 	@echo "Invalid `TARGET variable ; valid values are: pluto, sidekiqz2" &&
 	exit 1
 else
-all: $(TARGETS) zip-all legal-info
+all: clean-build $(TARGETS) zip-all legal-info
 endif
+
+.NOTPARALLEL: all
 
 TARGET_DTS_FILES:=$(foreach dts,$(TARGET_DTS_FILES),build/$(dts))
 
