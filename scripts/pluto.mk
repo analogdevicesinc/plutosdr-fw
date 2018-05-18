@@ -1,6 +1,8 @@
 
 # Target specific constants go here
 
+ADI_LEGAL:=1
+
 HDF_URL:=http://github.com/analogdevicesinc/plutosdr-fw/releases/download/${LATEST_TAG}/system_top.hdf
 TARGET_DTS_FILES:= zynq-pluto-sdr.dtb zynq-pluto-sdr-revb.dtb zynq-pluto-sdr-revc.dtb
 COMPLETE_NAME:=PlutoSDR
