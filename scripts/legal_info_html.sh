@@ -278,7 +278,8 @@ Since the source does not fit on a DVD-RW, it will be delivered on a USB Thumb d
 <p><b>You will also find a the source on-line, and are encouraged to obtain it for zero cost, at the project web sites.</b></p>
 </div>" >> ${FILE}
 else # not ADI_LEGAL
-echo "Since you, the end user built this from source, for ${TARGET}, and didn't get a binary, there is no requirement for a written offer." >> ${FILE}
+echo "Since you, the end user built this from source, for ${TARGET}, and didn't get a binary, there is no requirement for a written offer.
+</div>" >> ${FILE}
 fi
 
 html_h2 "NO WARRANTY"
