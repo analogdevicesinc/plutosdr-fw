@@ -17,7 +17,28 @@ Latest binary Release : [![GitHub release](https://img.shields.io/github/release
       make
  
  ```
-   
+ If you receive an error similar to the following:
+ ```
+ Starting SDK. This could take few seconds... timeout while establishing a connection with SDK
+    while executing
+"error "timeout while establishing a connection with SDK""
+    (procedure "getsdkchan" line 108)
+    invoked from within
+"getsdkchan"
+    (procedure "createhw" line 26)
+    invoked from within
+"createhw {*}$args"
+    (procedure "::sdk::create_hw_project" line 3)
+    invoked from within
+"sdk create_hw_project -name hw_0 -hwspec build/system_top.hdf"
+    (file "scripts/create_fsbl_project.tcl" line 5)
+```
+you may be able to work around it by preventing eclipse from using GTK3 for the Standard Widget Toolkit (SWT). Prior to running make, also set the following environment variable: 
+```bash
+export SWT_GTK3=0
+```
+This problem seems to affect Ubuntu 16.04LTS only.
+
  * Updating your local repository 
  ```bash 
       git pull
