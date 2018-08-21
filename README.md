@@ -12,11 +12,54 @@ Latest binary Release : [![GitHub release](https://img.shields.io/github/release
       git clone --recursive https://github.com/analogdevicesinc/plutosdr-fw.git
       cd plutosdr-fw
       export CROSS_COMPILE=arm-xilinx-linux-gnueabi-
-      export PATH=$PATH:/opt/Xilinx/SDK/2017.4/gnu/arm/lin/bin
+      export PATH=$PATH:/opt/Xilinx/SDK/2017.2/gnu/arm/lin/bin
       export VIVADO_SETTINGS=/opt/Xilinx/Vivado/2017.4/settings64.sh
       make
  
  ```
+
+ The project may build also using Vivado 2017.2, 2016.4 or 2016.2.
+ However 2017.4 is the current tested FPGA systhesis toolchain.
+ For comatibility reasons with existing targeting workflows we continue to
+ use the arm-xilinx-linux-gnueabi-gcc toolchain íncluded in the SDK 2017.2.
+
+ If you want to use the arm-linux-gnueabihf-gcc hard-float toolchain included in SDK 2017.4.
+ Following variables should be exported:
+
+
+ ```bash
+ export CROSS_COMPILE=arm-linux-gnueabihf-
+ export PATH=$PATH:/opt/Xilinx/SDK/2017.4/gnu/aarch32/lin/gcc-arm-linux-gnueabi/bin
+ ```
+
+ This patch must be applied to the buildroot zynq_pluto_defconfig.
+
+ ```diff
+ diff --git a/configs/zynq_pluto_defconfig b/configs/zynq_pluto_defconfig
+ index 483ddbe..21cd959 100644
+ --- a/configs/zynq_pluto_defconfig
+ +++ b/configs/zynq_pluto_defconfig
+ @@ -1,13 +1,13 @@
+ BR2_arm=y
+ BR2_cortex_a9=y
+ BR2_ARM_ENABLE_NEON=y
+ +BR2_ARM_ENABLE_VFP=y
+ BR2_ARM_FPU_NEON=y
+ BR2_TOOLCHAIN_EXTERNAL=y
+ BR2_TOOLCHAIN_EXTERNAL_CUSTOM=y
+ -BR2_TOOLCHAIN_EXTERNAL_PATH=""
+ -BR2_TOOLCHAIN_EXTERNAL_CUSTOM_PREFIX="arm-xilinx-linux-gnueabi"
+ -BR2_TOOLCHAIN_EXTERNAL_GCC_4_9=y
+ -BR2_TOOLCHAIN_EXTERNAL_HEADERS_3_19=y
+ +BR2_TOOLCHAIN_EXTERNAL_CUSTOM_PREFIX="arm-linux-gnueabihf"
+ +BR2_TOOLCHAIN_EXTERNAL_GCC_6=y
+ +BR2_TOOLCHAIN_EXTERNAL_HEADERS_4_9=y
+ BR2_TOOLCHAIN_EXTERNAL_CUSTOM_GLIBC=y
+ BR2_TOOLCHAIN_EXTERNAL_CXX=y
+ BR2_TARGET_GENERIC_HOSTNAME="pluto"
+ ```
+
+
  If you receive an error similar to the following:
  ```
  Starting SDK. This could take few seconds... timeout while establishing a connection with SDK
