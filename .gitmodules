@@ -5,7 +5,6 @@
 [submodule "buildroot"]
 	path = buildroot
 	url = https://github.com/analogdevicesinc/buildroot.git
-	branch = pluto
 [submodule "linux"]
 	path = linux
 	url = https://github.com/analogdevicesinc/linux
