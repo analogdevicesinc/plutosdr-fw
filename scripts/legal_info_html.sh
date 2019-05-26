@@ -70,14 +70,7 @@ html_header () {
 	echo "<img src=\"img/ADI_Logo_AWP.png\" alt=\"Analog Devices logo\" />" >> ${FILE}
 	echo "</a>" >> ${FILE}
 	echo "<div class=\"anchor\">" >> ${FILE}
-	echo "<a href=\"./index.html\" title=\"English\">English</a> |" >> ${FILE}
-	echo "<a href=\"./img/index_de.html\" title=\"Deutsch (German)\">Deutsch</a> |" >> ${FILE}
-	echo "<a href=\"./img/index_fr.html\" title=\"Français (French)\">Français</a> |" >> ${FILE}
-	echo "<a href=\"./img/index_es.html\" title=\"Español (Spanish)\">Español</a> |" >> ${FILE}
-	echo "<a href=\"./img/index_br.html\" title=\"Português (Portuguese)\">Português</a> |" >> ${FILE}
-	echo "<a href=\"./image/index_cn.html\" title=\"简体中文 (Chinese)\">简体中文</a> |" >> ${FILE}
-	echo "<a href=\"./image/index_jp.html\" title=\"日本語 (Japanese)\">日本語</a> | " >> ${FILE}
-	echo "<a href=\"./image/index_ru.html\" title=\"Руccкий (Russian)\">Руccкий</a>" >> ${FILE}
+	echo "<a href=\"./index.html\" title=\"Index\">Index</a>" >> ${FILE}
 	echo "</div>" >> ${FILE}
 
 	echo "</header>" >> ${FILE}
@@ -94,7 +87,7 @@ html_h1 () {
 }
 
 html_h1_id () {
-	echo "<a class=\"anchor\" href=\"#top\">Back to top</a>" >> ${FILE}
+	echo "<div class=\"anchor\"><a href=\"#version\">Back to list</a> | <a href=\"#top\">Back to top</a></div>" >> ${FILE}
 	echo "<h1 id=\"P$2\">$1</h1>" >> ${FILE}
 }
 
@@ -109,7 +102,7 @@ html_p () {
 html_pre_file () {
 	echo "<pre>" >> ${FILE}
 	# get the file, but html sanitize a few things
-	find $1 -type f -exec cat {} + | sed -e "s/\o14//g" -e "s/'/\&#39;/g" -e "s/</\&lt;/g" -e "s/>/\&gt;/g" >> ${FILE}
+	find $1 -type f -exec cat {} + | sed -e "s/\o14//g" -e "s/\o302\o251/\&copy;/g" -e "s/'/\&#39;/g" -e "s/</\&lt;/g" -e "s/>/\&gt;/g" >> ${FILE}
 	echo "</pre>" >> ${FILE}
 }
 
@@ -141,7 +134,7 @@ package_list_items () {
 	html_li_start
 	html_li "Version: ${1}"
 	html_li "License: ${2}"
-	html_li "Source Site: ${3}"
+	html_li "Source Site: <a href=\"${3}\">${3}</a>"
 	html_li_stop
 }
 
@@ -163,8 +156,9 @@ package_table_items () {
 			if $(strstr $url "ftp://") ; then
 				break
 			fi
+			# We should use curl's -L, but then we couldn't track things
 			tmp=$(curl -IsS $url)
-			if [ $(echo "$tmp" | head -1 | grep "301" | wc -l) -gt 0 ] ; then
+			if [ $(echo "$tmp" | head -1 | grep -E "301|302" | wc -l) -gt 0 ] ; then
 				url=$(echo "$tmp" | grep -i "Location:" | awk '{print $2}' | sed -e 's/^[ \t]*//;s/[ \t]*$//')
 				url=${url%$'\r'}
 			elif [ $(echo "$tmp" | head -1 | grep "404" | wc -l) -gt 0 ] ; then
@@ -172,8 +166,10 @@ package_table_items () {
 			elif [ $(echo "$tmp" | head -1 | grep "200" | wc -l) -gt 0 ] ; then
 				break
 			else
+				echo "<tr><td>err: ${url}</td><td>" $(echo "$tmp" | head -1) "</td></tr>" >> ${FILE}
 				echo unknown error while trying ${url}
 				echo "${tmp}"
+				break
 			fi
 		done
 	fi
@@ -255,26 +251,25 @@ html_h1 "${TARGET} Firmware $(get_version device-fw)"
 
 convert_md2html LICENSE.md >> ${FILE}
 
-echo "<div class="boxed">" >> ${FILE}
+echo "<div class=\"boxed\">" >> ${FILE}
 html_h2 "Written Offer"
 
-echo "As described above, the firmware included in the ${TARGET} contains copyrighted software that is released and distributed under many licenses, including the GPL.
+echo "<p>As described above, the firmware included in the ${TARGET} contains copyrighted software that is released and distributed under many licenses, including the GPL.
 A copy of the licenses are included in this file (below)." >> ${FILE}
 if [ "$TARGET" == "PlutoSDR" ] ; then
-echo "You may obtain the complete Corresponding Source code from us for a period of three years after our last shipment of this product, which will be no earlier than 01Jan2021, by sending a money order or check for \$15 (USD) to:
+echo "You may obtain the complete Corresponding Source code from us for a period of three years after our last shipment of this product, which will be no earlier than 01Jan2021, by sending a money order or check for \$15 (USD) to:</p>
 <pre>
-GPL Compliance
-Systems Development Group
-Attention: Robin Getz
 Analog Devices Inc.
-Three Technology Way
-Norwood, MA.
-02062
+Systems Development Group
+GPL Compliance
+Attention: Robin Getz
+1 Analog Way
+Wilmington, Massachusetts
+01887
 USA
 </pre>
-
-Please write “<i>source for the ${TARGET}</i>” in the memo line of your payment.
-Since the source does not fit on a DVD-RW, it will be delivered on a USB Thumb drive (hense the higher cost than just DVD or CD).
+<p>Please write “<i>source for the ${TARGET}</i>” in the memo line of your payment.
+Since the source does not fit on a DVD-RW, it will be delivered on a USB Thumb drive (hense the higher cost than just DVD or CD).</p>
 <p><b>You will also find a the source on-line, and are encouraged to obtain it for zero cost, at the project web sites.</b></p>
 </div>" >> ${FILE}
 else # not PlutoSDR
@@ -290,7 +285,6 @@ echo "</pre>" >> ${FILE}
 
 ### Table of packages
 html_h1 "Open source components/packages:"
-
 
 var=0
 echo "<p id=\"version\"><strong>Version Information:</strong></p>" >> ${FILE}
