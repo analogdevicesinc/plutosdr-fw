@@ -1,10 +1,21 @@
 #PATH=$PATH:/opt/Xilinx/SDK/2015.4/gnu/arm/lin/bin
 
 VIVADO_VERSION ?= 2018.2
+CROSS_COMPILE ?= arm-linux-gnueabihf-
 
-VIVADO_TOOLCHAIN_PATH ?= /opt/Xilinx/SDK/$(VIVADO_VERSION)/gnu/aarch32/lin/gcc-arm-linux-gnueabi
+HAVE_CROSS=$(shell which $(CROSS_COMPILE)gcc | wc -l)
+ifeq (0, ${HAVE_CROSS})
+$(warning *** can not find $(CROSS_COMPILE)gcc in PATH)
+$(error please update PATH)
+endif
 
-CROSS_COMPILE ?= $(VIVADO_TOOLCHAIN_PATH)/bin/arm-linux-gnueabihf-
+#gives us path/bin/arm-linux-gnueabihf-gcc
+TOOLCHAIN = $(shell which $(CROSS_COMPILE)gcc)
+#gives us path/bin
+TOOLCHAIN2 = $(shell dirname $(TOOLCHAIN))
+#gives us path we need
+TOOLCHAIN_PATH = $(shell dirname $(TOOLCHAIN2))
+
 
 NCORES = $(shell grep -c ^processor /proc/cpuinfo)
 VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/$(VIVADO_VERSION)/settings64.sh
@@ -14,6 +25,17 @@ VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
 LATEST_TAG=$(shell git describe --abbrev=0 --tags)
 UBOOT_VERSION=$(shell echo -n "PlutoSDR " && cd u-boot-xlnx && git describe --abbrev=0 --dirty --always --tags)
 HAVE_VIVADO= $(shell bash -c "source $(VIVADO_SETTINGS) > /dev/null 2>&1 && vivado -version > /dev/null 2>&1 && echo 1 || echo 0")
+
+ifeq (1, ${HAVE_VIVADO})
+	VIVADO_INSTALL= $(shell bash -c "source $(VIVADO_SETTINGS) > /dev/null 2>&1 && vivado -version | head -1 | awk '{print $2}'")
+	ifeq (, $(findstring $(VIVADO_VERSION), $(VIVADO_INSTALL)))
+$(warning *** This repository has only been tested with $(VIVADO_VERSION),)
+$(warning *** and you have $(VIVADO_INSTALL))
+$(warning *** Please 1] set the path to Vivado $(VIVADO_VERSION) OR)
+$(warning ***        2] remove $(VIVADO_INSTALL) from the path OR)
+$(error "      3] export VIVADO_VERSION=v20xx.x")
+	endif
+endif
 
 TARGET ?= pluto
 SUPPORTED_TARGETS:=pluto sidekiqz2
@@ -98,7 +120,7 @@ buildroot/output/images/rootfs.cpio.gz:
 	make -C buildroot legal-info
 	scripts/legal_info_html.sh "$(COMPLETE_NAME)" "$(CURDIR)/buildroot/board/$(TARGET)/VERSIONS"
 	cp build/LICENSE.html buildroot/board/$(TARGET)/msd/LICENSE.html
-	make -C buildroot TOOLCHAIN_EXTERNAL_INSTALL_DIR=$(VIVADO_TOOLCHAIN_PATH) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/$(TARGET)/busybox-1.25.0.config all
+	make -C buildroot TOOLCHAIN_EXTERNAL_INSTALL_DIR=$(TOOLCHAIN_PATH) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/$(TARGET)/busybox-1.25.0.config all
 
 .PHONY: buildroot/output/images/rootfs.cpio.gz
 
