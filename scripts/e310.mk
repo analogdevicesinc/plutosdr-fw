@@ -1,0 +1,9 @@
+
+TARGET_DTS_FILES:= zynq-e310.dtb
+COMPLETE_NAME:=E310
+ZIP_ARCHIVE_PREFIX:=e310
+
+# FIXME: we don't support these
+#DEVICE_VID:=0x2fa2
+#DEVICE_PID:=0x5a02
+

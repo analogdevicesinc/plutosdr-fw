@@ -38,7 +38,7 @@ $(error "      3] export VIVADO_VERSION=v20xx.x")
 endif
 
 TARGET ?= pluto
-SUPPORTED_TARGETS:=pluto sidekiqz2
+SUPPORTED_TARGETS:=pluto sidekiqz2 e310
 
 # Include target specific constants
 include scripts/$(TARGET).mk
@@ -130,10 +130,16 @@ build/rootfs.cpio.gz: buildroot/output/images/rootfs.cpio.gz | build
 build/$(TARGET).itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz $(TARGET_DTS_FILES) build/system_top.bit
 	u-boot-xlnx/tools/mkimage -f scripts/$(TARGET).its $@
 
+ifeq ($(TARGET),e310)
+HDL_TARGET:=usrpe31x
+else
+HDL_TARGET:=$(TARGET)
+endif
+
 build/system_top.hdf:  | build
 ifeq (1, ${HAVE_VIVADO})
-	bash -c "source $(VIVADO_SETTINGS) && make -C hdl/projects/$(TARGET) && cp hdl/projects/$(TARGET)/$(TARGET).sdk/system_top.hdf $@"
-	unzip -l $@ | grep -q ps7_init || cp hdl/projects/$(TARGET)/$(TARGET).srcs/sources_1/bd/system/ip/system_sys_ps7_0/ps7_init* build/
+	bash -c "source $(VIVADO_SETTINGS) && make -C hdl/projects/$(HDL_TARGET) && cp hdl/projects/$(HDL_TARGET)/$(HDL_TARGET).sdk/system_top.hdf $@"
+	unzip -l $@ | grep -q ps7_init || cp hdl/projects/$(HDL_TARGET)/$(HDL_TARGET).srcs/sources_1/bd/system/ip/system_sys_ps7_0/ps7_init* build/
 else
 ifneq ($(HDF_URL),)
 	wget -T 3 -t 1 -N --directory-prefix build $(HDF_URL)
