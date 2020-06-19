@@ -257,7 +257,9 @@ html_h2 "Written Offer"
 echo "<p>As described above, the firmware included in the ${TARGET} contains copyrighted software that is released and distributed under many licenses, including the GPL.
 A copy of the licenses are included in this file (below)." >> ${FILE}
 if [ "$TARGET" == "PlutoSDR" ] ; then
-echo "You may obtain the complete Corresponding Source code from us for a period of three years after our last shipment of this product, which will be no earlier than 01Jan2021, by sending a money order or check for \$15 (USD) to:</p>
+echo "You may obtain the complete Corresponding Source code from us for a period of three years after our last shipment of this product, which will be no earlier than " >> ${FILE}
+date --date="3 years 6 months" +"%d%b%Y" >> ${FILE}
+echo ", by sending a money order or check for \$15 (USD) to:</p>
 <pre>
 Analog Devices Inc.
 Systems Development Group
