@@ -1,6 +1,6 @@
 #PATH=$PATH:/opt/Xilinx/SDK/2015.4/gnu/arm/lin/bin
 
-VIVADO_VERSION ?= 2018.2
+VIVADO_VERSION ?= 2019.1
 CROSS_COMPILE ?= arm-linux-gnueabihf-
 
 HAVE_CROSS=$(shell which $(CROSS_COMPILE)gcc | wc -l)
@@ -213,7 +213,7 @@ dfu-all: build/$(TARGET).dfu build/boot.dfu build/uboot-env.dfu
 
 dfu-ram: build/$(TARGET).dfu
 	sshpass -p analog ssh root@$(TARGET) '/usr/sbin/device_reboot ram;'
-	sleep 5
+	sleep 7
 	dfu-util -D build/$(TARGET).dfu -a firmware.dfu
 	dfu-util -e
 
