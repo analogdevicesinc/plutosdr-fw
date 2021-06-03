@@ -134,10 +134,10 @@ build/system_top.hdf:  | build
 ifeq (1, ${HAVE_VIVADO})
 	bash -c "source $(VIVADO_SETTINGS) && make -C hdl/projects/$(TARGET) && cp hdl/projects/$(TARGET)/$(TARGET).sdk/system_top.hdf $@"
 	unzip -l $@ | grep -q ps7_init || cp hdl/projects/$(TARGET)/$(TARGET).srcs/sources_1/bd/system/ip/system_sys_ps7_0/ps7_init* build/
-else
-ifneq ($(HDF_URL),)
+else ifneq ($(HDF_FILE),)
+	cp $(HDF_FILE) $@
+else ifneq ($(HDF_URL),)
 	wget -T 3 -t 1 -N --directory-prefix build $(HDF_URL)
-endif
 endif
 
 ### TODO: Build system_top.hdf from src if dl fails - need 2016.2 for that ...
