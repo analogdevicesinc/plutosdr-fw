@@ -130,29 +130,26 @@ build/rootfs.cpio.gz: buildroot/output/images/rootfs.cpio.gz | build
 build/$(TARGET).itb: u-boot-xlnx/tools/mkimage build/zImage build/rootfs.cpio.gz $(TARGET_DTS_FILES) build/system_top.bit
 	u-boot-xlnx/tools/mkimage -f scripts/$(TARGET).its $@
 
-build/system_top.hdf:  | build
+build/system_top.xsa:  | build
 ifeq (1, ${HAVE_VIVADO})
-	bash -c "source $(VIVADO_SETTINGS) && make -C hdl/projects/$(TARGET) && cp hdl/projects/$(TARGET)/$(TARGET).sdk/system_top.hdf $@"
+	bash -c "source $(VIVADO_SETTINGS) && make -C hdl/projects/$(TARGET) && cp hdl/projects/$(TARGET)/$(TARGET).sdk/system_top.xsa $@"
 	unzip -l $@ | grep -q ps7_init || cp hdl/projects/$(TARGET)/$(TARGET).srcs/sources_1/bd/system/ip/system_sys_ps7_0/ps7_init* build/
-else ifneq ($(HDF_FILE),)
-	cp $(HDF_FILE) $@
-else ifneq ($(HDF_URL),)
-	wget -T 3 -t 1 -N --directory-prefix build $(HDF_URL)
+else ifneq ($(XSA_FILE),)
+	cp $(XSA_FILE) $@
+else ifneq ($(XSA_URL),)
+	wget -T 3 -t 1 -N --directory-prefix build $(XSA_URL)
 endif
 
-### TODO: Build system_top.hdf from src if dl fails - need 2016.2 for that ...
+### TODO: Build system_top.xsa from src if dl fails ...
 
-build/sdk/fsbl/Release/fsbl.elf build/sdk/hw_0/system_top.bit : build/system_top.hdf
+build/sdk/fsbl/Release/fsbl.elf build/system_top.bit : build/system_top.xsa
 	rm -Rf build/sdk
 ifeq (1, ${HAVE_VIVADO})
-	bash -c "source $(VIVADO_SETTINGS) && xsdk -batch -source scripts/create_fsbl_project.tcl"
+	bash -c "source $(VIVADO_SETTINGS) && xsct scripts/create_fsbl_project.tcl"
 else
 	mkdir -p build/sdk/hw_0
-	unzip -o build/system_top.hdf system_top.bit -d build/sdk/hw_0
+	unzip -o build/system_top.xsa system_top.bit -d build/sdk/hw_0
 endif
-
-build/system_top.bit: build/sdk/hw_0/system_top.bit
-	cp $< $@
 
 build/boot.bin: build/sdk/fsbl/Release/fsbl.elf build/u-boot.elf
 	@echo img:{[bootloader] $^ } > build/boot.bif
