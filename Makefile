@@ -1,6 +1,6 @@
 #PATH=$PATH:/opt/Xilinx/SDK/2015.4/gnu/arm/lin/bin
 
-VIVADO_VERSION ?= 2019.1
+VIVADO_VERSION ?= 2021.1
 CROSS_COMPILE ?= arm-linux-gnueabihf-
 
 HAVE_CROSS=$(shell which $(CROSS_COMPILE)gcc | wc -l)
@@ -214,7 +214,7 @@ dfu-ram: build/$(TARGET).dfu
 	dfu-util -D build/$(TARGET).dfu -a firmware.dfu
 	dfu-util -e
 
-jtag-bootstrap: build/u-boot.elf build/sdk/hw_0/ps7_init.tcl build/sdk/hw_0/system_top.bit scripts/run.tcl
+jtag-bootstrap: build/u-boot.elf build/ps7_init.tcl build/system_top.bit scripts/run.tcl
 	$(CROSS_COMPILE)strip build/u-boot.elf
 	zip -j build/$(ZIP_ARCHIVE_PREFIX)-$@-$(VERSION).zip $^
 
