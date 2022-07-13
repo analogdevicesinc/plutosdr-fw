@@ -25,6 +25,7 @@ VERSION=$(shell git describe --abbrev=4 --dirty --always --tags)
 LATEST_TAG=$(shell git describe --abbrev=0 --tags)
 UBOOT_VERSION=$(shell echo -n "PlutoSDR " && cd u-boot-xlnx && git describe --abbrev=0 --dirty --always --tags)
 HAVE_VIVADO= $(shell bash -c "source $(VIVADO_SETTINGS) > /dev/null 2>&1 && vivado -version > /dev/null 2>&1 && echo 1 || echo 0")
+XSA_URL ?= http://github.com/analogdevicesinc/plutosdr-fw/releases/download/${LATEST_TAG}/system_top.xsa
 
 ifeq (1, ${HAVE_VIVADO})
 	VIVADO_INSTALL= $(shell bash -c "source $(VIVADO_SETTINGS) > /dev/null 2>&1 && vivado -version | head -1 | awk '{print $2}'")
@@ -147,8 +148,7 @@ build/sdk/fsbl/Release/fsbl.elf build/system_top.bit : build/system_top.xsa
 ifeq (1, ${HAVE_VIVADO})
 	bash -c "source $(VIVADO_SETTINGS) && xsct scripts/create_fsbl_project.tcl"
 else
-	mkdir -p build/sdk/hw_0
-	unzip -o build/system_top.xsa system_top.bit -d build/sdk/hw_0
+	unzip -o build/system_top.xsa system_top.bit -d build
 endif
 
 build/boot.bin: build/sdk/fsbl/Release/fsbl.elf build/u-boot.elf
