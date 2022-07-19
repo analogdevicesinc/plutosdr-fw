@@ -261,18 +261,16 @@ echo "You may obtain the complete Corresponding Source code from us for a period
 date --date="3 years 6 months" +"%d%b%Y" >> ${FILE}
 echo ", by sending a money order or check for \$15 (USD) to:</p>
 <pre>
-Analog Devices Inc.
-Systems Development Group
-GPL Compliance
-Attention: Robin Getz
-1 Analog Way
-Wilmington, Massachusetts
-01887
-USA
+Director, Open Source Program Office
+Analog Devices
+Citypoint
+65 Haymarket Terrace
+Edinburgh EH5 3PN
+United Kingdom
 </pre>
 <p>Please write “<i>source for the ${TARGET}</i>” in the memo line of your payment.
-Since the source does not fit on a DVD-RW, it will be delivered on a USB Thumb drive (hense the higher cost than just DVD or CD).</p>
-<p><b>You will also find a the source on-line, and are encouraged to obtain it for zero cost, at the project web sites.</b></p>
+Since the source does not fit on a DVD-RW, it will be delivered on a USB Thumb drive (hence the higher cost than just DVD or CD).</p>
+<p><b>You will also find the source on-line, and are encouraged to obtain it for zero cost, at the project web sites.</b></p>
 </div>" >> ${FILE}
 else # not PlutoSDR
 echo "Since you, the end user built this from source, for ${TARGET}, and didn't get a binary, there is no requirement for a written offer.
