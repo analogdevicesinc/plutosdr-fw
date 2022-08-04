@@ -1,3 +1,8 @@
+(return 0 2>/dev/null) && sourced=1 || sourced=0
+if [ $sourced == 0 ]; then
+	echo "WARNING: this script has to be sourced!"
+fi
+
 export CROSS_COMPILE=arm-linux-gnueabihf-
 VITIS_BIN=/tools/Xilinx/Vitis/2022.1/gnu/aarch32/lin/gcc-arm-linux-gnueabi/bin
 if [ -z "$(echo $PATH | grep -e ${VITIS_BIN})" ] ; then
