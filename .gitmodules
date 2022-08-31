@@ -4,12 +4,13 @@
 	branch = pluto
 [submodule "buildroot"]
 	path = buildroot
-	url = https://github.com/analogdevicesinc/buildroot.git
+	url = https://github.com/catkira/buildroot.git
+	branch = master-next
 [submodule "linux"]
 	path = linux
-	url = https://github.com/analogdevicesinc/linux
-	branch = 2018_R1
+	url = https://github.com/catkira/linux
+	branch = antsdr
 [submodule "hdl"]
 	path = hdl
-	url = https://github.com/analogdevicesinc/hdl
-	branch = hdl_2018_r1
+	url = https://github.com/catkira/adi-hdl
+	branch = master

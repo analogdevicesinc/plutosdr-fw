@@ -152,6 +152,7 @@ package_table_items () {
 		if $(strstr $url sourceforge) ; then
 			url=$(echo ${url} | sed -e 's/downloads\.//' -e 's/project/projects/')
 		fi
+		retries=0
 		while [ 1 ] ; do
 			if $(strstr $url "ftp://") ; then
 				break
@@ -171,6 +172,11 @@ package_table_items () {
 				echo "${tmp}"
 				break
 			fi
+			if [ "$retries" -ge "10" ]; then
+				echo max retries reached while trying ${url}
+				break
+			fi
+			((retries++))
 		done
 	fi
 
