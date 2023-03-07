@@ -219,7 +219,7 @@ jtag-bootstrap: build/u-boot.elf build/ps7_init.tcl build/system_top.bit scripts
 	zip -j build/$(ZIP_ARCHIVE_PREFIX)-$@-$(VERSION).zip $^
 
 sysroot: buildroot/output/images/rootfs.cpio.gz
-	tar czfh build/sysroot-$(VERSION).tar.gz --hard-dereference --exclude=usr/share/man -C buildroot/output staging
+	tar czfh build/sysroot-$(VERSION).tar.gz --hard-dereference --exclude=usr/share/man --exclude=dev --exclude=etc -C buildroot/output staging
 
 legal-info: buildroot/output/images/rootfs.cpio.gz
 	tar czvf build/legal-info-$(VERSION).tar.gz -C buildroot/output legal-info
