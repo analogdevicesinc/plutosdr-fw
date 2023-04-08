@@ -1,15 +1,15 @@
 [submodule "u-boot-xlnx"]
 	path = u-boot-xlnx
-	url = https://github.com/analogdevicesinc/u-boot-xlnx.git
+	url = https://github.com/vxling/u-boot-xlnx.git
 	branch = pluto
 [submodule "buildroot"]
 	path = buildroot
-	url = https://github.com/analogdevicesinc/buildroot.git
+	url = https://github.com/vxling/buildroot.git
 [submodule "linux"]
 	path = linux
-	url = https://github.com/analogdevicesinc/linux
+	url = https://github.com/vxling/linux
 	branch = 2018_R1
 [submodule "hdl"]
 	path = hdl
-	url = https://github.com/analogdevicesinc/hdl
+	url = https://github.com/vxling/hdl
 	branch = hdl_2018_r1
