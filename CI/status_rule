@@ -1,0 +1,15 @@
+# Errors
+error /\bError\b/
+error /(?i)no rule to make target/
+error /(?i)command not found/
+
+# Warnings
+warning /^\bWarning\b/
+warning /(?i)cannot open/
+warning /(?i)cannot create/
+warning /(?i)cannot stat/
+warning /(?i)doesn't exists/
+warning /(?i)no such file or directory/
+warning /(?i)permission denied/
+warning /(?i)Failed connect to artifactory.analog.com/
+warning /(?i)unknown error while trying/
