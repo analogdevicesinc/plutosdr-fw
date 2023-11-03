@@ -14,35 +14,19 @@ Firmware License : [![Many Licenses](https://img.shields.io/badge/license-LGPL2+
  sudo apt-get install bc python cpio zip unzip rsync file wget
  git clone --recursive https://github.com/analogdevicesinc/plutosdr-fw.git
  cd plutosdr-fw
- export CROSS_COMPILE=arm-linux-gnueabihf-
- export PATH=$PATH:/opt/Xilinx/Vitis/2021.2/gnu/aarch32/lin/gcc-arm-linux-gnueabi/bin
  export VIVADO_SETTINGS=/opt/Xilinx/Vivado/2021.2/settings64.sh
  make
 
 ```
 
-The project may build also using Vivado 2019.1 2018.2 2017.4, 2017.2, 2016.4 or 2016.2.
-However 2021.2 is the current tested FPGA systhesis toolchain.
-In the v0.30 release we swithched to the arm-linux-gnueabihf-gcc hard-float toolchain.
+Due to incompatibility between the AMD/Xilinx GCC toolchain supplied with Vivado/Vitis and Buildroot.
+This project switched to Buildroot external Toolchain: Linaro GCC 7.3-2018.05 7.3.1
 
-If you want to use the former arm-xilinx-linux-gnueabi-gcc soft-float toolchain included in SDK 2017.2.
-Following variables should be exported:
+https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/arm-linux-gnueabihf/
 
-
- ```bash
- export CROSS_COMPILE=arm-xilinx-linux-gnueabi-
- export PATH=$PATH:/opt/Xilinx/SDK/2017.2/gnu/arm/lin/bin
- export VIVADO_SETTINGS=/opt/Xilinx/Vivado/2017.4/settings64.sh
- ```
-
-And you need to revert this patch:
-https://github.com/analogdevicesinc/buildroot/commit/fea212afc7dc0ee530762a1921d9ae8180778ffa
+This toolchain is used to build: Buildroot, Linux and u-boot
 
 
- If you receive an error similar to the following:
- ```
- Starting SDK. This could take few seconds... timeout while establishing a connection with SDK
-    while executing
 "error "timeout while establishing a connection with SDK""
     (procedure "getsdkchan" line 108)
     invoked from within

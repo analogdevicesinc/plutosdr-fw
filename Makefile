@@ -1,21 +1,10 @@
-#PATH=$PATH:/opt/Xilinx/SDK/2015.4/gnu/arm/lin/bin
 
 VIVADO_VERSION ?= 2021.2
-CROSS_COMPILE ?= arm-linux-gnueabihf-
 
-HAVE_CROSS=$(shell which $(CROSS_COMPILE)gcc | wc -l)
-ifeq (0, ${HAVE_CROSS})
-$(warning *** can not find $(CROSS_COMPILE)gcc in PATH)
-$(error please update PATH)
-endif
-
-#gives us path/bin/arm-linux-gnueabihf-gcc
-TOOLCHAIN = $(shell which $(CROSS_COMPILE)gcc)
-#gives us path/bin
-TOOLCHAIN2 = $(shell dirname $(TOOLCHAIN))
-#gives us path we need
-TOOLCHAIN_PATH = $(shell dirname $(TOOLCHAIN2))
-
+# Use Buildroot External Linaro GCC 7.3-2018.05 arm-linux-gnueabihf Toolchain
+CROSS_COMPILE = arm-linux-gnueabihf-
+TOOLS_PATH = PATH="$(CURDIR)/buildroot/output/host/bin:$(CURDIR)/buildroot/output/host/sbin:$(PATH)"
+TOOLCHAIN = $(CURDIR)/buildroot/output/host/bin/$(CROSS_COMPILE)gcc
 
 NCORES = $(shell grep -c ^processor /proc/cpuinfo)
 VIVADO_SETTINGS ?= /opt/Xilinx/Vivado/$(VIVADO_VERSION)/settings64.sh
@@ -69,45 +58,50 @@ endif
 
 TARGET_DTS_FILES:=$(foreach dts,$(TARGET_DTS_FILES),build/$(dts))
 
+TOOLCHAIN:
+	make -C buildroot ARCH=arm zynq_$(TARGET)_defconfig
+	make -C buildroot toolchain
+
 build:
 	mkdir -p $@
 
 %: build/%
 	cp $< $@
 
+
 ### u-boot ###
 
-u-boot-xlnx/u-boot u-boot-xlnx/tools/mkimage:
-	make -C u-boot-xlnx ARCH=arm zynq_$(TARGET)_defconfig
-	make -C u-boot-xlnx ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) UBOOTVERSION="$(UBOOT_VERSION)"
+u-boot-xlnx/u-boot u-boot-xlnx/tools/mkimage: TOOLCHAIN
+	$(TOOLS_PATH) make -C u-boot-xlnx ARCH=arm zynq_$(TARGET)_defconfig
+	$(TOOLS_PATH) make -C u-boot-xlnx ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) UBOOTVERSION="$(UBOOT_VERSION)"
 
 .PHONY: u-boot-xlnx/u-boot
 
 build/u-boot.elf: u-boot-xlnx/u-boot | build
 	cp $< $@
 
-build/uboot-env.txt: u-boot-xlnx/u-boot | build
-	CROSS_COMPILE=$(CROSS_COMPILE) scripts/get_default_envs.sh > $@
+build/uboot-env.txt: u-boot-xlnx/u-boot TOOLCHAIN | build
+	$(TOOLS_PATH) CROSS_COMPILE=$(CROSS_COMPILE) scripts/get_default_envs.sh > $@
 
 build/uboot-env.bin: build/uboot-env.txt
 	u-boot-xlnx/tools/mkenvimage -s 0x20000 -o $@ $<
 
 ### Linux ###
 
-linux/arch/arm/boot/zImage:
-	make -C linux ARCH=arm zynq_$(TARGET)_defconfig
-	make -C linux -j $(NCORES) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) zImage UIMAGE_LOADADDR=0x8000
+linux/arch/arm/boot/zImage: TOOLCHAIN
+	$(TOOLS_PATH) make -C linux ARCH=arm zynq_$(TARGET)_defconfig
+	$(TOOLS_PATH) make -C linux -j $(NCORES) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) zImage UIMAGE_LOADADDR=0x8000 KCFLAGS='-mcpu=cortex-a9 -mfpu=vfpv4 -mfloat-abi=soft -O2'
 
 .PHONY: linux/arch/arm/boot/zImage
 
 
-build/zImage: linux/arch/arm/boot/zImage  | build
+build/zImage: linux/arch/arm/boot/zImage | build
 	cp $< $@
 
 ### Device Tree ###
 
-linux/arch/arm/boot/dts/%.dtb: linux/arch/arm/boot/dts/%.dts  linux/arch/arm/boot/dts/zynq-pluto-sdr.dtsi
-	DTC_FLAGS=-@ make -C linux -j $(NCORES) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) $(notdir $@)
+linux/arch/arm/boot/dts/%.dtb: TOOLCHAIN linux/arch/arm/boot/dts/%.dts  linux/arch/arm/boot/dts/zynq-pluto-sdr.dtsi
+	$(TOOLS_PATH) DTC_FLAGS=-@ make -C linux -j $(NCORES) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) $(notdir $@)
 
 build/%.dtb: linux/arch/arm/boot/dts/%.dtb | build
 	dtc -q -@ -I dtb -O dts $< | sed 's/axi {/amba {/g' | dtc -q -@ -I dts -O dtb -o $@
@@ -121,7 +115,7 @@ buildroot/output/images/rootfs.cpio.gz:
 	make -C buildroot legal-info
 	scripts/legal_info_html.sh "$(COMPLETE_NAME)" "$(CURDIR)/buildroot/board/$(TARGET)/VERSIONS"
 	cp build/LICENSE.html buildroot/board/$(TARGET)/msd/LICENSE.html
-	make -C buildroot TOOLCHAIN_EXTERNAL_INSTALL_DIR=$(TOOLCHAIN_PATH) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/$(TARGET)/busybox-1.25.0.config all
+	make -C buildroot BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/$(TARGET)/busybox-1.25.0.config all
 
 .PHONY: buildroot/output/images/rootfs.cpio.gz
 
@@ -215,7 +209,7 @@ dfu-ram: build/$(TARGET).dfu
 	dfu-util -e
 
 jtag-bootstrap: build/u-boot.elf build/ps7_init.tcl build/system_top.bit scripts/run.tcl
-	$(CROSS_COMPILE)strip build/u-boot.elf
+	$(TOOLS_PATH) $(CROSS_COMPILE)strip build/u-boot.elf
 	zip -j build/$(ZIP_ARCHIVE_PREFIX)-$@-$(VERSION).zip $^
 
 sysroot: buildroot/output/images/rootfs.cpio.gz
