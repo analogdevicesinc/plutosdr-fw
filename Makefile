@@ -1,5 +1,5 @@
 
-VIVADO_VERSION ?= 2021.2
+VIVADO_VERSION ?= 2022.2
 
 # Use Buildroot External Linaro GCC 7.3-2018.05 arm-linux-gnueabihf Toolchain
 CROSS_COMPILE = arm-linux-gnueabihf-
