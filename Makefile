@@ -112,9 +112,13 @@ buildroot/output/images/rootfs.cpio.gz:
 	@echo device-fw $(VERSION)> $(CURDIR)/buildroot/board/$(TARGET)/VERSIONS
 	@$(foreach dir,$(VSUBDIRS),echo $(dir) $(shell cd $(dir) && git describe --abbrev=4 --dirty --always --tags) >> $(CURDIR)/buildroot/board/$(TARGET)/VERSIONS;)
 	make -C buildroot ARCH=arm zynq_$(TARGET)_defconfig
+
+ifneq (1, ${SKIP_LEGAL})
 	make -C buildroot legal-info
 	scripts/legal_info_html.sh "$(COMPLETE_NAME)" "$(CURDIR)/buildroot/board/$(TARGET)/VERSIONS"
 	cp build/LICENSE.html buildroot/board/$(TARGET)/msd/LICENSE.html
+endif
+
 	make -C buildroot BUSYBOX_CONFIG_FILE=$(CURDIR)/buildroot/board/$(TARGET)/busybox-1.25.0.config all
 
 .PHONY: buildroot/output/images/rootfs.cpio.gz
@@ -216,7 +220,10 @@ sysroot: buildroot/output/images/rootfs.cpio.gz
 	tar czfh build/sysroot-$(VERSION).tar.gz --hard-dereference --exclude=usr/share/man --exclude=dev --exclude=etc -C buildroot/output staging
 
 legal-info: buildroot/output/images/rootfs.cpio.gz
+ifneq (1, ${SKIP_LEGAL})
 	tar czvf build/legal-info-$(VERSION).tar.gz -C buildroot/output legal-info
+endif
+
 
 git-update-all:
 	git submodule update --recursive --remote
