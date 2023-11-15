@@ -212,7 +212,7 @@ dfu-ram: build/$(TARGET).dfu
 	dfu-util -D build/$(TARGET).dfu -a firmware.dfu
 	dfu-util -e
 
-jtag-bootstrap: build/u-boot.elf build/ps7_init.tcl build/system_top.bit scripts/run.tcl
+jtag-bootstrap: build/u-boot.elf build/ps7_init.tcl build/system_top.bit scripts/run.tcl scripts/run-xsdb.tcl
 	$(TOOLS_PATH) $(CROSS_COMPILE)strip build/u-boot.elf
 	zip -j build/$(ZIP_ARCHIVE_PREFIX)-$@-$(VERSION).zip $^
 
