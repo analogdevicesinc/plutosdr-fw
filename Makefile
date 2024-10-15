@@ -1,5 +1,5 @@
 
-VIVADO_VERSION ?= 2022.2
+VIVADO_VERSION ?= 2023.2
 
 # Use Buildroot External Linaro GCC 7.3-2018.05 arm-linux-gnueabihf Toolchain
 CROSS_COMPILE = arm-linux-gnueabihf-
@@ -91,6 +91,7 @@ build/uboot-env.bin: build/uboot-env.txt
 linux/arch/arm/boot/zImage: TOOLCHAIN
 	$(TOOLS_PATH) make -C linux ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) zynq_$(TARGET)_defconfig
 	$(TOOLS_PATH) make -C linux -j $(NCORES) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) zImage UIMAGE_LOADADDR=0x8000
+
 
 .PHONY: linux/arch/arm/boot/zImage
 
