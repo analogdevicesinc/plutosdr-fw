@@ -1,0 +1,20 @@
+name: Trigger sync
+
+description:
+    'Trigger external sync workflow.'
+
+on:
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - master
+
+jobs:
+    sync:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger sync
+              shell: sh
+              run: |
+                echo "Sync signal sent!"
+                       
