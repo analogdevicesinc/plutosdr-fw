@@ -1,0 +1,80 @@
+name: Sync resources
+
+run-name: Sync resources ${{ github.event.inputs.command }} ${{ github.event.inputs.id }}
+
+description:
+    'Testing sync output gathered from external resources. Data gathered is a log zip file.'
+
+on:
+    workflow_dispatch:
+        inputs:
+            id:
+              type: string
+              required: true
+            command:
+              type: choice
+              required: true
+              options:
+                - trigger
+                - get-status
+                - get-results
+            logs-status:
+                type: string
+                required: false
+            logs-data:
+                type: string
+                required: false
+    pull_request:
+        branches:
+          - master
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+    trigger-sync:
+        if: ${{ inputs.command == 'trigger' || github.event_name == 'pull_request' }}
+        runs-on: ubuntu-latest
+        steps:
+          - name: Trigger sync
+            shell: sh
+            run: |
+              echo "Sync signal sent!"
+    get-sync-status:
+        if: ${{ inputs.command == 'get-status' }}
+        timeout-minutes: 180
+        runs-on: ubuntu-latest
+        steps:
+          - name: Log sync status
+            shell: sh
+            run: |
+              echo "Internal resources triggered successfuly!"
+              echo "Please wait for the get-sync-results.yml for the final output."
+              echo "Thank you!"
+              while true; do
+                echo "Internal resources still running ..."
+                sleep 10
+              done
+    get-sync-results:
+        if: ${{ inputs.command == 'get-results' }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Setup python
+              uses: actions/setup-python@v6
+              with:
+                python-version: '3.13'
+            - name: Setup Cloudsmith OIDC
+              uses: cloudsmith-io/cloudsmith-cli-action@dbeb7b69746286974aab4a39a9f369a4fd0d5334 #v1.0.5
+              with:
+                oidc-namespace: ${{ secrets.OIDC_NAMESPACE }}
+                oidc-service-slug: ${{ secrets.OIDC_SERVICE_SLUG }}
+            - name: Log sync status
+              shell: sh
+              run: |
+                echo "${{ inputs.logs-status }}"
+            - name: Log sync data
+              shell: sh
+              run: |
+                curl -L -H "X-Api-Key: ${{ env.CLOUDSMITH_API_KEY}}" "${{ inputs.logs-data }}" -o ./logs.txt
+                cat logs.txt
